@@ -22,7 +22,8 @@ public class Db {
     private final String DATABASENAME = "HeatedPlannet.db";
     private final String GRID_CELLS_TABLE = "SimulatiinGridCells";
     private final String SIMULATION_SETTINGS_TABLE = "SimulationSetttings";
-    private final String CREATE_SIMUTATIONSETTINGS = "CREATE TABLE " + SIMULATION_SETTINGS_TABLE +
+    private final String CREATE_SIMUTATIONSETTINGS =
+                                    "CREATE TABLE " + SIMULATION_SETTINGS_TABLE +
                                     "(SimulationId          Long    PRIMARY KEY NOT NULL," +
                                     " Name                  TEXT    NOT NULL" +
                                     " StoragePrecision      INT   "+
@@ -34,16 +35,18 @@ public class Db {
                                     " GridSpacing           INT   "+
                                     " TimeStep              INT   "+
                                     " Length                INT   "+
-                                    " EntryTime             TimeStamp ";
+                                    " EntryTime             TimeStamp )";
 
-    private final String CREATE_SIMUTATIONGRIDCELLS = "CREATE TABLE " + GRID_CELLS_TABLE +
+    private final String CREATE_SIMUTATIONGRIDCELLS = 
+                                    "CREATE TABLE " + GRID_CELLS_TABLE +
                                     "(GridCellId            Long    PRIMARY KEY NOT NULL," +
-                                    "(SimulationId          Long    NOT NULL," +
+                                    " SimulationId          Long    NOT NULL," +
                                     " Latitude              Double " +
                                     " Temperature           Double " +
                                     " Longitude             Double " +
                                     " ReadingDate           Long   "+
-                                    " ReadingTime           Long   ";
+                                    " ReadingTime           Long   "+
+                                    " FOREIGN KEY(SimulationId) REFERENCES " + CREATE_SIMUTATIONSETTINGS + "(SimulationId))";
 
     /**
      * Used to retrieve simulated settings
