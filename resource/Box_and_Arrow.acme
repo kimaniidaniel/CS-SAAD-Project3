@@ -1,0 +1,255 @@
+import $AS_GLOBAL_PATH/families/BatchSequentialFam.acme;
+ 
+import $AS_GLOBAL_PATH/families/EventBasedFam.acme;
+ 
+import $AS_GLOBAL_PATH/families/RepositoryFam.acme;
+ 
+import $AS_GLOBAL_PATH/families/IndirectInvocationFam.acme;
+ 
+import $AS_GLOBAL_PATH/families/RemoteCallReturnFam.acme;
+ 
+import $AS_GLOBAL_PATH/families/ClientServerFam.acme;
+ 
+import $AS_GLOBAL_PATH/families/LocalCallReturnFam.acme;
+ 
+import $AS_GLOBAL_PATH/families/PipeAndFilter.acme;
+ 
+import $AS_GLOBAL_PATH/families/DataflowFam.acme;
+ 
+import $AS_GLOBAL_PATH/families/CallReturnFam.acme;
+ 
+import $AS_GLOBAL_PATH/families/PubSubFam.acme;
+ 
+System Box_and_Arrow : BatchSequentialFam, EventBasedFam, RepositoryFam, IndirectInvocationFam, RemoteCallReturnFam, ClientServerFam, LocalCallReturnFam, PipeAndFilterFam, DataflowFam, CallReturnFam, PubSubFam = new BatchSequentialFam, EventBasedFam, RepositoryFam, IndirectInvocationFam, RemoteCallReturnFam, ClientServerFam, LocalCallReturnFam, PipeAndFilterFam, DataflowFam, CallReturnFam, PubSubFam extended with {
+
+    Component Demo  = {
+        Port call  = {
+
+        }
+
+    }
+    Component ControllerGUI  = {
+        Port call  = {
+
+        }
+        Port call1  = {
+
+        }
+
+    }
+    Component Controller  = {
+        Port call  = {
+
+        }
+        Port call1  = {
+
+        }
+
+    }
+    Component Model : ProducerProgramCompT = new ProducerProgramCompT extended with {
+        Port recevie_send  = {
+
+        }
+        Port call  = {
+
+        }
+        Port fileOutput0 : ProgramOutputPortT = new ProgramOutputPortT extended with {
+
+        }
+
+    }
+    Component View_ : ConsumerProgramCompT = new ConsumerProgramCompT extended with {
+        Port receive_send  = {
+
+        }
+        Port call1  = {
+
+        }
+        Port ProgramOutputPortT0 : ProgramOutputPortT = new ProgramOutputPortT extended with {
+
+        }
+
+    }
+    Component Earth  = {
+        Port call  = {
+
+        }
+        Port call1  = {
+
+        }
+
+    }
+    Component EarthDisplay  = {
+        Port call  = {
+
+        }
+        Port call1  = {
+
+        }
+        Port call2  = {
+
+        }
+        Port call3  = {
+
+        }
+        Port call4  = {
+
+        }
+
+    }
+    Component GridDisplay  = {
+        Port call  = {
+
+        }
+
+    }
+    Component SimulationStatus  = {
+        Port call  = {
+
+        }
+
+    }
+    Component EarthImage  = {
+        Port call  = {
+
+        }
+
+    }
+    Component GridCell  = {
+        Port call  = {
+
+        }
+
+    }
+    Component ThermalVisualizer  = {
+        Port call  = {
+
+        }
+
+    }
+    Connector Procedure_Call  = {
+        Role role0  = {
+
+        }
+        Role role1  = {
+
+        }
+
+    }
+    Connector Event  = {
+        Role role0  = {
+
+        }
+        Role role1  = {
+
+        }
+        Role Role3  = {
+
+        }
+
+    }
+    Connector Stream  = {
+        Role role0  = {
+
+        }
+        Role role1  = {
+
+        }
+
+    }
+    Connector Procedure_Call0  = {
+        Role role0  = {
+
+        }
+        Role role1  = {
+
+        }
+
+    }
+    Connector Procedure_Call1  = {
+        Role role0  = {
+
+        }
+        Role role1  = {
+
+        }
+
+    }
+    Connector Procedure_Call2  = {
+        Role role0  = {
+
+        }
+        Role role1  = {
+
+        }
+
+    }
+    Connector Procedure_Call3  = {
+        Role role0  = {
+
+        }
+        Role role1  = {
+
+        }
+
+    }
+    Connector Procedure_Call4  = {
+        Role role0  = {
+
+        }
+        Role role1  = {
+
+        }
+
+    }
+    Connector Procedure_Call5  = {
+        Role role0  = {
+
+        }
+        Role role1  = {
+
+        }
+
+    }
+    Connector Procedure_Call6  = {
+        Role role0  = {
+
+        }
+        Role role1  = {
+
+        }
+
+    }
+    Connector Procedure_Call7  = {
+        Role role0  = {
+
+        }
+        Role role1  = {
+
+        }
+
+    }
+    Attachment Model.recevie_send to Event.Role3;
+    Attachment View_.receive_send to Procedure_Call3.role1;
+    Attachment EarthDisplay.call2 to Procedure_Call3.role0;
+    Attachment EarthDisplay.call4 to Procedure_Call6.role1;
+    Attachment ThermalVisualizer.call to Procedure_Call6.role0;
+    Attachment EarthDisplay.call3 to Procedure_Call7.role1;
+    Attachment GridDisplay.call to Procedure_Call7.role0;
+    Attachment SimulationStatus.call to Procedure_Call5.role0;
+    Attachment EarthDisplay.call1 to Procedure_Call5.role1;
+    Attachment EarthDisplay.call to Procedure_Call4.role1;
+    Attachment EarthImage.call to Procedure_Call4.role0;
+    Attachment Earth.call1 to Procedure_Call1.role1;
+    Attachment Model.call to Procedure_Call1.role0;
+    Attachment Earth.call to Procedure_Call2.role0;
+    Attachment Controller.call to Event.role1;
+    Attachment Controller.call1 to Procedure_Call.role1;
+    Attachment ControllerGUI.call to Procedure_Call.role0;
+    Attachment ControllerGUI.call1 to Procedure_Call0.role1;
+    Attachment Demo.call to Procedure_Call0.role0;
+    Attachment View_.call1 to Event.role0;
+    Attachment GridCell.cal to Procedure_Call2.role1;
+    Attachment GridCell.call to Procedure_Call2.role1;
+}
+

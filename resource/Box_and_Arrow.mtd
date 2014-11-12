@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<AcmeModel>
+  <system name="Box_and_Arrow">
+    <userdata key="SaveData">
+      <data date="10/26/14 4:32 PM"/>
+    </userdata>
+    <userdata key="vis-information">
+      <data height="710" rotation="0.0" width="831"/>
+    </userdata>
+    <userdata key="connection-patterns">
+      <data>
+        <portConnectionRule connector="Connector" name="">
+          <association componentType="Component" portName="p" portType="Port" roleName="r" roleType="Role"/>
+          <association componentType="Component" portName="p" portType="Port" roleName="r" roleType="Role"/>
+        </portConnectionRule>
+      </data>
+    </userdata>
+    <userdata key="acme-legend">
+      <data componentsWidth="93" connectorsWidth="116" height="185" layout="4" name="Box_and_Arrow" othersWidth="47" portsWidth="58" relativeLocation="BELOW" rolesWidth="47" userPos="false" userResize="false" width="476" x="281" y="750" zOrder="0">
+        <item description="Consumer" type="ConsumerProgramCompT"/>
+        <item description="Component" type="Component"/>
+        <item description="Producer" type="ProducerProgramCompT"/>
+        <item description="Connector" type="Connector"/>
+        <item description="Pipe" type="PipeConnT"/>
+        <item description="EventBusConnT" type="EventBusConnT"/>
+        <item description="Port" type="Port"/>
+        <item description="Output" type="ProgramOutputPortT"/>
+        <item description="Role" type="Role"/>
+      </data>
+    </userdata>
+    <component name="Demo">
+      <userdata key="vis-information">
+        <data category="component" height="50" rotation="0.0" width="100" x="425" y="48"/>
+      </userdata>
+      <port name="call">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="2" relPosY="25" rotation="0.0" x="427" y="73"/>
+        </userdata>
+      </port>
+    </component>
+    <component name="ControllerGUI">
+      <userdata key="vis-information">
+        <data category="component" height="50" rotation="0.0" width="100" x="425" y="163"/>
+      </userdata>
+      <port name="call">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="0" relPosY="25" rotation="0.0" x="425" y="188"/>
+        </userdata>
+      </port>
+      <port name="call1">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="2" relPosY="-25" rotation="0.0" x="427" y="138"/>
+        </userdata>
+      </port>
+    </component>
+    <component name="Controller">
+      <userdata key="vis-information">
+        <data category="component" height="50" rotation="0.0" width="100" x="425" y="289"/>
+      </userdata>
+      <port name="call">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="-1" relPosY="25" rotation="0.0" x="424" y="314"/>
+        </userdata>
+      </port>
+      <port name="call1">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="0" relPosY="-25" rotation="0.0" x="425" y="264"/>
+        </userdata>
+      </port>
+    </component>
+    <component name="Model">
+      <userdata key="vis-information">
+        <data category="component" height="50" rotation="0.0" width="100" x="257" y="439"/>
+      </userdata>
+      <port name="recevie_send">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="3" relPosY="-12" rotation="0.0" x="260" y="427"/>
+        </userdata>
+      </port>
+      <port name="call">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="4" relPosY="11" rotation="0.0" x="261" y="450"/>
+        </userdata>
+      </port>
+      <port name="fileOutput0">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="50" relPosY="0" rotation="0.0" x="307" y="439"/>
+        </userdata>
+        <design-rule name="matchingTransmissionFormats">
+          <userdata key="RuleInfo">
+            <data errMsg="The transmission formats DO NOT match" label="The transmission formats of all attachments must match the port"/>
+          </userdata>
+        </design-rule>
+      </port>
+      <design-rule name="atLeast1portOfTypeProgramOutputPortT">
+        <userdata key="RuleInfo">
+          <data errMsg="Component DOES NOT have at least 1 port of type ProgramOutputPortT." label="Component has at least 1 port of type ProgramOutputPortT."/>
+        </userdata>
+      </design-rule>
+      <design-rule name="atLeastTheseTypesInputPortT_OutputPortT">
+        <userdata key="RuleInfo">
+          <data errMsg="Does not have ports of type InputPortT,OutputPortT" label="Has ports of type InputPortT,OutputPortT"/>
+        </userdata>
+      </design-rule>
+    </component>
+    <component name="View_">
+      <userdata key="vis-information">
+        <data category="component" height="50" rotation="0.0" width="100" x="593" y="439"/>
+      </userdata>
+      <port name="receive_send">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="6" relPosY="11" rotation="0.0" x="599" y="450"/>
+        </userdata>
+      </port>
+      <port name="call1">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="6" relPosY="-11" rotation="0.0" x="599" y="428"/>
+        </userdata>
+      </port>
+      <port name="ProgramOutputPortT0">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" height="10" relPosX="-50" relPosY="1" rotation="0.0" width="10" x="543" y="440"/>
+        </userdata>
+        <design-rule name="matchingTransmissionFormats">
+          <userdata key="RuleInfo">
+            <data errMsg="The transmission formats DO NOT match" label="The transmission formats of all attachments must match the port"/>
+          </userdata>
+        </design-rule>
+      </port>
+      <design-rule name="atLeastTheseTypesInputPortT_OutputPortT">
+        <userdata key="RuleInfo">
+          <data errMsg="Does not have ports of type InputPortT,OutputPortT" label="Has ports of type InputPortT,OutputPortT"/>
+        </userdata>
+      </design-rule>
+    </component>
+    <component name="Earth">
+      <userdata key="vis-information">
+        <data category="component" height="50" rotation="0.0" width="100" x="258" y="565"/>
+      </userdata>
+      <port name="call">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="3" relPosY="25" rotation="0.0" x="261" y="590"/>
+        </userdata>
+      </port>
+      <port name="call1">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="2" relPosY="-25" rotation="0.0" x="260" y="540"/>
+        </userdata>
+      </port>
+    </component>
+    <component name="EarthDisplay">
+      <userdata key="vis-information">
+        <data category="component" height="50" rotation="0.0" width="100" x="598" y="559"/>
+      </userdata>
+      <port name="call">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="-50" relPosY="1" rotation="0.0" x="548" y="560"/>
+        </userdata>
+      </port>
+      <port name="call1">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="-16" relPosY="25" rotation="0.0" x="582" y="584"/>
+        </userdata>
+      </port>
+      <port name="call2">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="1" relPosY="-25" rotation="0.0" x="599" y="534"/>
+        </userdata>
+      </port>
+      <port name="call3">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="24" relPosY="25" rotation="0.0" x="622" y="584"/>
+        </userdata>
+      </port>
+      <port name="call4">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="50" relPosY="0" rotation="0.0" x="648" y="559"/>
+        </userdata>
+      </port>
+    </component>
+    <component name="GridDisplay">
+      <userdata key="vis-information">
+        <data category="component" rotation="0.0" x="690" y="683"/>
+      </userdata>
+      <port name="call">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="-3" relPosY="-25" rotation="0.0" x="687" y="658"/>
+        </userdata>
+      </port>
+    </component>
+    <component name="SimulationStatus">
+      <userdata key="vis-information">
+        <data category="component" rotation="0.0" x="532" y="683"/>
+      </userdata>
+      <port name="call">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="2" relPosY="-25" rotation="0.0" x="534" y="658"/>
+        </userdata>
+      </port>
+    </component>
+    <component name="EarthImage">
+      <userdata key="vis-information">
+        <data category="component" height="50" rotation="0.0" width="100" x="421" y="559"/>
+      </userdata>
+      <port name="call">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="50" relPosY="1" rotation="0.0" x="471" y="560"/>
+        </userdata>
+      </port>
+    </component>
+    <component name="GridCell">
+      <userdata key="vis-information">
+        <data category="component" height="50" rotation="0.0" width="100" x="262" y="685"/>
+      </userdata>
+      <port name="call">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="0" relPosY="-25" rotation="0.0" x="262" y="660"/>
+        </userdata>
+      </port>
+    </component>
+    <component name="ThermalVisualizer">
+      <userdata key="vis-information">
+        <data category="component" height="50" rotation="0.0" width="100" x="781" y="559"/>
+      </userdata>
+      <port name="call">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="-50" relPosY="0" rotation="0.0" x="731" y="559"/>
+        </userdata>
+      </port>
+    </component>
+    <connector name="Procedure_Call">
+      <userdata key="vis-information">
+        <data rotation="0.0" x="425" y="226"/>
+      </userdata>
+      <role name="role0">
+        <userdata key="vis-information">
+          <data category="role" rotation="0.0" x="425" y="188"/>
+        </userdata>
+      </role>
+      <role name="role1">
+        <userdata key="vis-information">
+          <data category="role" rotation="0.0" x="425" y="264"/>
+        </userdata>
+      </role>
+    </connector>
+    <connector name="Event">
+      <userdata key="vis-information">
+        <data height="30" rotation="0.0" width="37" x="424" y="365"/>
+      </userdata>
+      <role name="role0">
+        <userdata key="vis-information">
+          <data category="role" rotation="0.0" x="599" y="428"/>
+        </userdata>
+      </role>
+      <role name="role1">
+        <userdata key="vis-information">
+          <data category="role" rotation="0.0" x="424" y="314"/>
+        </userdata>
+      </role>
+      <role name="Role3">
+        <userdata key="vis-information">
+          <data category="role" height="12" rotation="0.0" width="12" x="260" y="427"/>
+        </userdata>
+      </role>
+    </connector>
+    <connector name="Stream">
+      <userdata key="vis-information">
+        <data rotation="0.0" x="425" y="440"/>
+      </userdata>
+      <role name="role0">
+        <userdata key="vis-information">
+          <data category="role" height="12" rotation="0.0" width="12" x="319" y="439"/>
+        </userdata>
+      </role>
+      <role name="role1">
+        <userdata key="vis-information">
+          <data category="role" rotation="0.0" x="531" y="441"/>
+        </userdata>
+      </role>
+    </connector>
+    <connector name="Procedure_Call0">
+      <userdata key="vis-information">
+        <data rotation="0.0" x="427" y="106"/>
+      </userdata>
+      <role name="role0">
+        <userdata key="vis-information">
+          <data category="role" height="12" rotation="0.0" width="12" x="427" y="73"/>
+        </userdata>
+      </role>
+      <role name="role1">
+        <userdata key="vis-information">
+          <data category="role" rotation="0.0" x="427" y="138"/>
+        </userdata>
+      </role>
+    </connector>
+    <connector name="Procedure_Call1">
+      <userdata key="vis-information">
+        <data rotation="0.0" x="261" y="502"/>
+      </userdata>
+      <role name="role0">
+        <userdata key="vis-information">
+          <data category="role" height="12" rotation="0.0" width="12" x="261" y="450"/>
+        </userdata>
+      </role>
+      <role name="role1">
+        <userdata key="vis-information">
+          <data category="role" height="12" rotation="0.0" width="12" x="260" y="540"/>
+        </userdata>
+      </role>
+    </connector>
+    <connector name="Procedure_Call2">
+      <userdata key="vis-information">
+        <data rotation="0.0" x="262" y="625"/>
+      </userdata>
+      <role name="role0">
+        <userdata key="vis-information">
+          <data category="role" height="12" rotation="0.0" width="12" x="261" y="590"/>
+        </userdata>
+      </role>
+      <role name="role1">
+        <userdata key="vis-information">
+          <data category="role" rotation="0.0" x="262" y="660"/>
+        </userdata>
+      </role>
+    </connector>
+    <connector name="Procedure_Call3">
+      <userdata key="vis-information">
+        <data rotation="0.0" x="599" y="499"/>
+      </userdata>
+      <role name="role0">
+        <userdata key="vis-information">
+          <data category="role" height="12" rotation="0.0" width="12" x="599" y="534"/>
+        </userdata>
+      </role>
+      <role name="role1">
+        <userdata key="vis-information">
+          <data category="role" rotation="0.0" x="599" y="450"/>
+        </userdata>
+      </role>
+    </connector>
+    <connector name="Procedure_Call4">
+      <userdata key="vis-information">
+        <data rotation="0.0" x="510" y="560"/>
+      </userdata>
+      <role name="role0">
+        <userdata key="vis-information">
+          <data category="role" height="12" rotation="0.0" width="12" x="471" y="560"/>
+        </userdata>
+      </role>
+      <role name="role1">
+        <userdata key="vis-information">
+          <data category="role" height="12" rotation="0.0" width="12" x="548" y="560"/>
+        </userdata>
+      </role>
+    </connector>
+    <connector name="Procedure_Call5">
+      <userdata key="vis-information">
+        <data rotation="0.0" x="558" y="621"/>
+      </userdata>
+      <role name="role0">
+        <userdata key="vis-information">
+          <data category="role" height="12" rotation="0.0" width="12" x="534" y="658"/>
+        </userdata>
+      </role>
+      <role name="role1">
+        <userdata key="vis-information">
+          <data category="role" height="12" rotation="0.0" width="12" x="582" y="584"/>
+        </userdata>
+      </role>
+    </connector>
+    <connector name="Procedure_Call6">
+      <userdata key="vis-information">
+        <data rotation="0.0" x="690" y="559"/>
+      </userdata>
+      <role name="role0">
+        <userdata key="vis-information">
+          <data category="role" height="12" rotation="0.0" width="12" x="731" y="559"/>
+        </userdata>
+      </role>
+      <role name="role1">
+        <userdata key="vis-information">
+          <data category="role" height="12" rotation="0.0" width="12" x="648" y="559"/>
+        </userdata>
+      </role>
+    </connector>
+    <connector name="Procedure_Call7">
+      <userdata key="vis-information">
+        <data rotation="0.0" x="655" y="621"/>
+      </userdata>
+      <role name="role0">
+        <userdata key="vis-information">
+          <data category="role" height="12" rotation="0.0" width="12" x="687" y="658"/>
+        </userdata>
+      </role>
+      <role name="role1">
+        <userdata key="vis-information">
+          <data category="role" rotation="0.0" x="622" y="584"/>
+        </userdata>
+      </role>
+    </connector>
+  </system>
+</AcmeModel>
