@@ -6,13 +6,14 @@
 package Model;
 
 import Utils.TemperatureReading;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  *
  * @author kimaniidaniel
  */
-public class Query
+public class Query implements Serializable
 {
     public long StartDateTime;
     public long EndDateTime;
