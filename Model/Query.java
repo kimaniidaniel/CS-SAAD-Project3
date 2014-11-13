@@ -5,16 +5,22 @@
  */
 package Model;
 
+import Utils.TemperatureReading;
+import java.util.List;
+
 /**
  *
  * @author kimaniidaniel
  */
 public class Query
 {
-    public long SimulationDate;
-    public int StoragePrecision;
-    public int GeographicPrecision;
-    public int TemporalPrecision;
-    public double Orbit;
-    public double Tilt;
+    public long StartDate;
+    public long EndDate;
+    public long StartTime;
+    public long EndTime;
+    public double LatitudeStart;
+    public double LatitudeEnd;
+    public long LongitudeStart;
+    public long LongitudeEnd;
+    public List<TemperatureReading> Result;
 }
