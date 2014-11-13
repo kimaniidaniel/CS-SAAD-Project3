@@ -285,35 +285,36 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 	
 	public double getEccentricAnamoly(int currentTime) {
-		return approximationInversion(getMeanAnamoly(currentTime));
+		return equationSolverNewton(getMeanAnamoly(currentTime));
 	}
 	
-	public double approximationInversion(double meanAnamoly) {
-		// approximation inversion for Kepler's Equation
-		double tol = 1e-9;
-		boolean breakflag = false;
-		double E1 = meanAnamoly, E = 0;
-
-		while (breakflag == false) {
-		    //Fixed-point iterative version of Kepler's Equation
-		    E = meanAnamoly + Earth.E * Math.sin(Math.toRadians(E1));
-		    //Break loop if tolerance is achieved
-		    if (Math.abs(E - E1) < tol) {
-		    	breakflag = true;
-		    }
-		    E1 = E;
-		}
-		
-		//Format the answer so that it is between 0 and 2*pi
-		while (E > (2 * Math.PI)) {
-			E = E - 2 * Math.PI;
-		}
-		while (E < 0) {
-			E = E + 2 * Math.PI;
-		}
-		
-		return E;
+	public double equationSolverNewton(double meanAnamoly) {
+	    double del = 1e-5,xx = 0 ;
+	    double dx =0, x=Math.PI/2;
+	    int k = 0;
+	    //while (Math.abs(xx-x) > del && k<10 && functionOfX(meanAnamoly, x)!=0) {
+	    while (Math.abs(xx-x) > del && k<10 && functionOfX(meanAnamoly, x)!=0) {
+	      dx = functionOfX(meanAnamoly, x)/derivativeOfX(x);
+	      xx=x;
+	      x =x - dx;
+	      k++;
+	    
+	    //System.out.println("Iteration number: " + k);
+	    //System.out.println("Root obtained: " + x);
+	    //System.out.println("Estimated error: " + Math.abs(xx-x));
+	    }	    
+	    return x;
 	}
+	
+	// Method to provide function f(x)
+	public static double functionOfX(double meanAnamoly, double x) {
+	    return (meanAnamoly - x + (Earth.E * Math.sin((x))));
+	}
+
+	// Method to provide the derivative f'(x).
+	public static double derivativeOfX(double x) {
+	    return (-1 + Earth.E * Math.cos((x)));
+	}	
 	
 	public double trueAnamoly(int currentTime) {
 		double eccentricAnamoly = getEccentricAnamoly(currentTime);

@@ -38,8 +38,8 @@ public final class Earth {
 
 	//P3 Heated Planet
 	public static final double T = 525974.4;				//Orbital period of Earth in minutes
-	public static final double E = 0.0167; 					//Eccentricity of the planet earth
-	//public static final double E = 0.7; 					// EXPERIMENTAL VALUE
+	//public static final double E = 0.0167; 					//Eccentricity of the planet earth
+	public static final double E = 0.7; 					//EXPERIMENTAL VALUE TO SEE AN ACTUAL ELLIPSE
 	public static final double a = 1.496 * Math.pow(10, 11);//Length of the semi-major axis of earth IN METERS
 	public static final double omega = 114;					//Argument of periapsis for the Earth:
 	public static final double tilt = 23.44;				//Obliquity(tilt) of the planet
@@ -50,6 +50,8 @@ public final class Earth {
 	public static final double animationGreatestDimention = 150; 
 	public static final double factor = animationGreatestDimention/2*a;
 	public static final double b =  a * (Math.sqrt(1-(E * E)));
+	
+	
 
 	
 	public Earth() {
