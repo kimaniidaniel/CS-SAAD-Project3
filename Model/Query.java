@@ -14,13 +14,11 @@ import java.util.List;
  */
 public class Query
 {
-    public long StartDate;
-    public long EndDate;
-    public long StartTime;
-    public long EndTime;
+    public long StartDateTime;
+    public long EndDateTime;
     public double LatitudeStart;
     public double LatitudeEnd;
-    public long LongitudeStart;
-    public long LongitudeEnd;
+    public double LongitudeStart;
+    public double LongitudeEnd;
     public List<TemperatureReading> Result;
 }
