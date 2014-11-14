@@ -207,14 +207,15 @@ public final class GridCell implements EarthCell<GridCell> {
 		//P2 - Heated Planet : Find correct attenuation depending on the sun latitude
 		int   sunLatitude      = (int) getSunLatitudeOnEarth();
 		//System.out.println("\n" + "Sun Latitude is " + sunLatitude + " for Earth.currentTimeInSimulation " + Earth.currentTimeInSimulation);
-		float attenuation_lat   = (float) Math.cos(Math.toRadians(Math.abs(sunLatitude - this.latitude)));
+		float attenuation_lat   = (float) Math.abs(Math.cos(Math.toRadians(Math.abs((sunLatitude - this.latitude  - 1.0 * this.gs / 2) % 180))));
 		//float attenuation_longi = (float) (( (Math.abs(sunLongitude - this.longitude) % 360 ) < 90 ) ? Math.cos(Math.toRadians(sunLongitude - this.longitude)) : 0);
 		float attenuation_longi = (float) Math.cos(Math.toRadians(sunLongitude - this.longitude));
 		attenuation_longi = attenuation_longi > 0 ? attenuation_longi : 0;
 		
 		//return 278 * attenuation_lat * attenuation_longi;
 		//P3 - Heated Planet : Sun's distance from planet, inverse square law
-		return (float) (278 * attenuation_lat * attenuation_longi); 
+		double ratio = Math.pow(distanceFromPlanet(Earth.currentTimeInSimulation),2) / Math.pow((Earth.a + Earth.b)/2, 2);
+		return (float) (278 * ratio * attenuation_lat * attenuation_longi); 
 		//============ Math.pow(distanceFromPlanet(Earth.currentTimeInSimulation),2));
 	}
 	
@@ -285,36 +286,35 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 	
 	public double getEccentricAnamoly(int currentTime) {
-		return equationSolverNewton(getMeanAnamoly(currentTime));
+		return approximationInversion(getMeanAnamoly(currentTime));
 	}
 	
-	public double equationSolverNewton(double meanAnamoly) {
-	    double del = 1e-5,xx = 0 ;
-	    double dx =0, x=Math.PI/2;
-	    int k = 0;
-	    //while (Math.abs(xx-x) > del && k<10 && functionOfX(meanAnamoly, x)!=0) {
-	    while (Math.abs(xx-x) > del && k<10 && functionOfX(meanAnamoly, x)!=0) {
-	      dx = functionOfX(meanAnamoly, x)/derivativeOfX(x);
-	      xx=x;
-	      x =x - dx;
-	      k++;
-	    
-	    //System.out.println("Iteration number: " + k);
-	    //System.out.println("Root obtained: " + x);
-	    //System.out.println("Estimated error: " + Math.abs(xx-x));
-	    }	    
-	    return x;
-	}
-	
-	// Method to provide function f(x)
-	public static double functionOfX(double meanAnamoly, double x) {
-	    return (meanAnamoly - x + (Earth.E * Math.sin((x))));
-	}
+	public double approximationInversion(double meanAnamoly) {
+		// approximation inversion for Kepler's Equation
+		double tol = 1e-9;
+		boolean breakflag = false;
+		double E1 = meanAnamoly, E = 0;
 
-	// Method to provide the derivative f'(x).
-	public static double derivativeOfX(double x) {
-	    return (-1 + Earth.E * Math.cos((x)));
-	}	
+		while (breakflag == false) {
+		    //Fixed-point iterative version of Kepler's Equation
+		    E = meanAnamoly + Earth.E * Math.sin(Math.toRadians(E1));
+		    //Break loop if tolerance is achieved
+		    if (Math.abs(E - E1) < tol) {
+		    	breakflag = true;
+		    }
+		    E1 = E;
+		}
+		
+		//Format the answer so that it is between 0 and 2*pi
+		while (E > (2 * Math.PI)) {
+			E = E - 2 * Math.PI;
+		}
+		while (E < 0) {
+			E = E + 2 * Math.PI;
+		}
+		
+		return E;
+	}
 	
 	public double trueAnamoly(int currentTime) {
 		double eccentricAnamoly = getEccentricAnamoly(currentTime);
@@ -339,6 +339,7 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 	
 	public void setTimeOfEquinox() {
+		// actually two days for equinox, one is March 21, one is Sept 23
 		int t=0;
 		for ( ; Earth.tauAN==0 && t < Earth.T; t++) {
 			double trueAnamoly = trueAnamoly(t);

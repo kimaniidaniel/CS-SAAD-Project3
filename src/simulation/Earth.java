@@ -26,20 +26,20 @@ public final class Earth {
 	private static final int[] increments = { 1,2,3,4,5,6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180 };
 
 	private int currentStep;
-	private int width;
-	private int height;
+	private static int width;
+	private static int height;
 	private int sunPositionCell;
 
-	private GridCell prime = null;
+	private static GridCell prime = null;
 	private int timeStep = DEFAULT_SPEED;
 	private int gs = DEFAULT_DEGREES;
 	
-	//private ArrayBlockingQueue<IGrid> q;xa
+	//private ArrayBlockingQueue<IGrid> q;
 
 	//P3 Heated Planet
 	public static final double T = 525974.4;				//Orbital period of Earth in minutes
 	//public static final double E = 0.0167; 					//Eccentricity of the planet earth
-	public static final double E = 0.7; 					//EXPERIMENTAL VALUE TO SEE AN ACTUAL ELLIPSE
+	public static final double E = 0.9; 					//EXPERIMENTAL VALUE TO SEE AN ACTUAL ELLIPSE
 	public static final double a = 1.496 * Math.pow(10, 11);//Length of the semi-major axis of earth IN METERS
 	public static final double omega = 114;					//Argument of periapsis for the Earth:
 	public static final double tilt = 23.44;				//Obliquity(tilt) of the planet
@@ -188,7 +188,7 @@ public final class Earth {
 		bfs.add(prime);
 		
 		//P3 - Heated Planet
-		Earth.currentTimeInSimulation = currentStep*200;
+		Earth.currentTimeInSimulation = t * 200;
 
 		while (!bfs.isEmpty()) {
 
@@ -206,10 +206,6 @@ public final class Earth {
 				grid.setTemperature(child.getX(), child.getY(), calcdTemp);
 				bfs.add(child);
 				suntotal += child.calTsun(sunPositionCell);
-				//Set display values here
-				grid.setSunLatitudeDeg((float) child.getSunLatitudeOnEarth());
-				grid.setPlanetX(child.getPlanetX(Earth.currentTimeInSimulation));
-				grid.setPlanetY(child.getPlanetY(Earth.currentTimeInSimulation));
 			}
 		}
 
@@ -221,6 +217,11 @@ public final class Earth {
 			c = calcd.poll();
 		}
 
+		//Set display values here
+		grid.setSunLatitudeDeg((float) (-1 * prime.getSunLatitudeOnEarth()));
+		grid.setPlanetX(prime.getPlanetX(Earth.currentTimeInSimulation));
+		grid.setPlanetY(prime.getPlanetY(Earth.currentTimeInSimulation));
+		
 		Buffer.getBuffer().add(grid);
 	}
 
@@ -276,4 +277,23 @@ public final class Earth {
 	private int getLongitude(int x) {
 		return x < (width / 2) ? -(x + 1) * this.gs : (360) - (x + 1) * this.gs;
 	}
+	
+	private static void printGrid(){
+		GridCell curr = prime;
+		//System.out.println(height);
+		//System.out.println(width);
+		float total = 0;
+		for (int x = 0; x < height; x++) {
+			GridCell rowgrid = curr.getLeft();
+			for (int y = 0; y < width; y++) {
+				System.out.printf("%.2f,",rowgrid.getTemp());
+				rowgrid = rowgrid.getLeft();
+				total += rowgrid.getTemp() - 288;
+			}
+			System.out.println();
+			curr = curr.getTop();
+		}
+		System.out.println(total);
+	}
+	
 }

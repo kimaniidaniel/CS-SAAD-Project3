@@ -4,11 +4,16 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import simulation.Earth;
+
 public class testGridCell {
 
 	@Test
 	public void test() {
-		fail("Not yet implemented");
+		GridCell newcell = new GridCell(10, 0, 0, 180, 90, 5);
+		newcell.setTimeOfEquinox();
+		System.out.println("\n" + "trueAnamoly " + Earth.tauAN);
 	}
 
+	
 }
