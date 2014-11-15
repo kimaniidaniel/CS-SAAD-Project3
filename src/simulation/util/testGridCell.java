@@ -9,11 +9,19 @@ import simulation.Earth;
 public class testGridCell {
 
 	@Test
-	public void test() {
-		GridCell newcell = new GridCell(10, 0, 0, 180, 90, 5);
-		newcell.setTimeOfEquinox();
-		System.out.println("\n" + "trueAnamoly " + Earth.tauAN);
+	public void testSunDistance() throws InterruptedException {
+		// Tsun should be smaller with longer distance
+		Earth newearth   = new Earth();
+		newearth.setcurrentStep(0);
+		newearth.configure(1,1);
+		newearth.start();
+		newearth.generate();
+		float perihelion_tmp = GridCell.getAvgSuntemp();
+		
+		newearth.setcurrentStep(262800);
+		newearth.generate();
+		float aphelion_tmp = GridCell.getAvgSuntemp();
+		
+		assertTrue("The average temp at perihelion should be larger than at aphelion", perihelion_tmp > aphelion_tmp);
 	}
-
-	
 }

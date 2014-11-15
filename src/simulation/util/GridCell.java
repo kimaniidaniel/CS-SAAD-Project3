@@ -43,8 +43,6 @@ public final class GridCell implements EarthCell<GridCell> {
 		this.setBottom(bottom);
 		this.setLeft(left);
 		this.setRight(right);
-		//P2 Heated Planet: Set time of equinox
-		this.setTimeOfEquinox();
 	}
 
 	@Override
@@ -207,14 +205,14 @@ public final class GridCell implements EarthCell<GridCell> {
 		//P2 - Heated Planet : Find correct attenuation depending on the sun latitude
 		int   sunLatitude      = (int) getSunLatitudeOnEarth();
 		//System.out.println("\n" + "Sun Latitude is " + sunLatitude + " for Earth.currentTimeInSimulation " + Earth.currentTimeInSimulation);
-		float attenuation_lat   = (float) Math.abs(Math.cos(Math.toRadians(Math.abs((sunLatitude - this.latitude  - 1.0 * this.gs / 2) % 180))));
+		float attenuation_lat   = (float) Math.cos(Math.toRadians(Math.abs((sunLatitude - this.latitude  - 1.0 * this.gs / 2))));
 		//float attenuation_longi = (float) (( (Math.abs(sunLongitude - this.longitude) % 360 ) < 90 ) ? Math.cos(Math.toRadians(sunLongitude - this.longitude)) : 0);
 		float attenuation_longi = (float) Math.cos(Math.toRadians(sunLongitude - this.longitude));
 		attenuation_longi = attenuation_longi > 0 ? attenuation_longi : 0;
 		
 		//return 278 * attenuation_lat * attenuation_longi;
 		//P3 - Heated Planet : Sun's distance from planet, inverse square law
-		double ratio = Math.pow(distanceFromPlanet(Earth.currentTimeInSimulation),2) / Math.pow((Earth.a + Earth.b)/2, 2);
+		double ratio = Math.pow((Earth.a + Earth.b)/2, 0.5) / Math.pow(distanceFromPlanet(Earth.currentTimeInSimulation),0.5);
 		return (float) (278 * ratio * attenuation_lat * attenuation_longi); 
 		//============ Math.pow(distanceFromPlanet(Earth.currentTimeInSimulation),2));
 	}
@@ -281,12 +279,12 @@ public final class GridCell implements EarthCell<GridCell> {
 	
 	//=================================================
 	//P3 Heated Planet
-	public double getMeanAnamoly(int currentTime) {
+	public double getMeanAnomaly(int currentTime) {
 		return (2 * Math.PI * currentTime / Earth.T);
 	}
 	
-	public double getEccentricAnamoly(int currentTime) {
-		return approximationInversion(getMeanAnamoly(currentTime));
+	public double getEccentricAnomaly(int currentTime) {
+		return approximationInversion(getMeanAnomaly(currentTime));
 	}
 	
 	public double approximationInversion(double meanAnamoly) {
@@ -316,8 +314,8 @@ public final class GridCell implements EarthCell<GridCell> {
 		return E;
 	}
 	
-	public double trueAnamoly(int currentTime) {
-		double eccentricAnamoly = getEccentricAnamoly(currentTime);
+	public double trueAnomaly(int currentTime) {
+		double eccentricAnamoly = getEccentricAnomaly(currentTime);
 		double numerator = Math.cos((eccentricAnamoly)) - Earth.E;
 		double denominator = 1 - (Earth.E * Math.cos((eccentricAnamoly)));
 		return (Math.acos((numerator/denominator)));
@@ -325,31 +323,17 @@ public final class GridCell implements EarthCell<GridCell> {
 	
 	public double distanceFromPlanet(int currentTime) {
 		double numerator = 1 - (Earth.E * Earth.E);
-		double denominator = 1 + (Earth.E * Math.cos((trueAnamoly(currentTime))));
+		double denominator = 1 + (Earth.E * Math.cos((trueAnomaly(currentTime))));
 		return (Earth.a * numerator / denominator);
 	}
 	
 	public float getPlanetX(int currentTime) {
-		return (float) ((Earth.a * Earth.E)  + (Earth.a * Math.cos((getEccentricAnamoly(currentTime)))));
+		return (float) ((Earth.a * Earth.E)  + (Earth.a * Math.cos((getEccentricAnomaly(currentTime)))));
 	}
 
 	public float getPlanetY(int currentTime) {
 		double b = Earth.a * (Math.sqrt(1-(Earth.E * Earth.E)));
-		return (float) (b * Math.sin((getEccentricAnamoly(currentTime))));
-	}
-	
-	public void setTimeOfEquinox() {
-		// actually two days for equinox, one is March 21, one is Sept 23
-		int t=0;
-		for ( ; Earth.tauAN==0 && t < Earth.T; t++) {
-			double trueAnamoly = trueAnamoly(t);
-			//System.out.println("\n" + "trueAnamoly " + trueAnamoly);
-			if(Math.abs(Math.toRadians(Earth.omega)- trueAnamoly) <= 0.1)			//Try 10 as a limit to try first
-			{
-				Earth.tauAN = t;
-				break;
-			}
-		}
+		return (float) (b * Math.sin((getEccentricAnomaly(currentTime))));
 	}
 	
 	public double getRotationalAngle(int currentTime)

@@ -38,16 +38,16 @@ public final class Earth {
 
 	//P3 Heated Planet
 	public static final double T = 525974.4;				//Orbital period of Earth in minutes
-	//public static final double E = 0.0167; 					//Eccentricity of the planet earth
-	public static final double E = 0.9; 					//EXPERIMENTAL VALUE TO SEE AN ACTUAL ELLIPSE
-	public static final double a = 1.496 * Math.pow(10, 11);//Length of the semi-major axis of earth IN METERS
+	public static double E = 0.0167; 					//Eccentricity of the planet earth
+	//public static final double E = 0.9; 					//EXPERIMENTAL VALUE TO SEE AN ACTUAL ELLIPSE
 	public static final double omega = 114;					//Argument of periapsis for the Earth:
-	public static final double tilt = 23.44;				//Obliquity(tilt) of the planet
+	public static double tilt = 23.44;				//Obliquity(tilt) of the planet
 	public static int tauAN = 0;								//Time of the Equinox
 	public static int currentTimeInSimulation = 0;
 	
 	//planet around sun animation
 	public static final double animationGreatestDimention = 150; 
+	public static final double a = 1.496 * Math.pow(10, 11);//Length of the semi-major axis of earth IN METERS
 	public static final double factor = animationGreatestDimention/2*a;
 	public static final double b =  a * (Math.sqrt(1-(E * E)));
 	
@@ -156,9 +156,9 @@ public final class Earth {
 	public void generate() throws InterruptedException {
 		
 		// Don't attempt to generate if output queue is full...
-		if(Buffer.getBuffer().getRemainingCapacity() == 0) {
-			return;
-		}
+		//if(Buffer.getBuffer().getRemainingCapacity() == 0) {
+		//	return;
+		//}
 		
 		//System.out.println("generating grid...");
 		Queue<GridCell> bfs = new LinkedList<GridCell>();
@@ -188,7 +188,7 @@ public final class Earth {
 		bfs.add(prime);
 		
 		//P3 - Heated Planet
-		Earth.currentTimeInSimulation = t * 200;
+		Earth.currentTimeInSimulation = t;
 
 		while (!bfs.isEmpty()) {
 
@@ -222,7 +222,10 @@ public final class Earth {
 		grid.setPlanetX(prime.getPlanetX(Earth.currentTimeInSimulation));
 		grid.setPlanetY(prime.getPlanetY(Earth.currentTimeInSimulation));
 		
-		Buffer.getBuffer().add(grid);
+		//P3 Heated Planet: Set time of equinox
+		setTimeOfEquinox();
+		
+		//Buffer.getBuffer().add(grid);
 	}
 
 	private void createRow(GridCell curr, GridCell next, GridCell bottom,
@@ -276,6 +279,36 @@ public final class Earth {
 
 	private int getLongitude(int x) {
 		return x < (width / 2) ? -(x + 1) * this.gs : (360) - (x + 1) * this.gs;
+	}
+	
+	
+	public void setTimeOfEquinox() {
+		// actually two days for equinox, one is March 21, one is Sept 23
+		// What I got is actually April 22nd, the beginning day is Jan. 1st.
+		int t=0;
+		double distClose = 1000;
+		for ( ; t < Earth.T; t++) {
+			double trueAnomaly = prime.trueAnomaly(t);
+			//System.out.println("\n" + "trueAnamoly " + trueAnamoly);
+			double dist = Math.abs(Math.toRadians(Earth.omega)- trueAnomaly);
+			if(dist <= distClose)			//Try 10 as a limit to try first
+			{
+				tauAN = t;
+				distClose = dist;
+			}
+		}
+	}
+	
+	public void setcurrentStep(int step){
+		this.currentStep = step;
+	}
+	
+	public void setE(double newE) {
+		Earth.E = newE;
+	}
+	
+	public void setTilt(double newTilt) {
+		Earth.tilt = newTilt;
 	}
 	
 	private static void printGrid(){
