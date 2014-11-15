@@ -42,7 +42,7 @@ public class Model extends ThreadModel{
 	
 	//used by the controller to update the configuration
 	public void updateConfig(String Name,int  StoragePrecision,int TemporalPrecision,int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length){
-		System.out.println("UDPATING SIM CONFIGURATION");
+		if (this.isDebug()) { System.out.println("UDPATING SIM CONFIGURATION"); }
 		this.db = new DBModel( Name, StoragePrecision, TemporalPrecision, GeographicalPrecision, StartDate, Orbit, Tilt, GridSpacing, TimeStep, Length);
 	}
 	@SuppressWarnings({ "rawtypes" })
@@ -53,19 +53,22 @@ public class Model extends ThreadModel{
 			queue.put(item);
 }
 	public void stopModel(){
-		System.out.println("MODEL STOPPING");
+		if (this.isDebug()) { System.out.println("MODEL STOPPING"); }
 		//this.sim.stop();
 		this.stop();
 	}
 	public void pause(){
-		System.out.println("MODEL PAUSED");
+		if (this.isDebug()) { System.out.println("MODEL PAUSED"); }
 		//this.sim.pause();
 		try { this.db.manualCommit();
-		} catch (SQLException e) {	e.printStackTrace();	}
+		} catch (SQLException e) {	
+			e.printStackTrace(); 
+			this.stop(); 
+		}
 		this.pause();
 	}
 	public void unpause(){
-		System.out.println("MODEL RESUMING");
+		if (this.isDebug()) { System.out.println("MODEL RESUMING"); }
 		//this.sim.resume();
 		this.resume();
 	}
@@ -94,7 +97,7 @@ public class Model extends ThreadModel{
 				enqueue(viewQueue,map);
 		}
 		
-		view.stop();				//stops viewer
+		view.stop();			//stops viewer
 		this.db.closeDBSession();	//cleans up the db 
 		this.stop();
 		
