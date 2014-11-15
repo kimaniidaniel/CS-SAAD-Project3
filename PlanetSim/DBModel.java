@@ -301,5 +301,8 @@ public class DBModel {
 			}
 		}
 	}
+	public void manualCommit()throws SQLException{
+		this.conn.commit();
+	}
 
 }
