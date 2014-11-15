@@ -10,7 +10,7 @@ public class Model extends ThreadModel{
 	BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(1024);		//queue to simulator
 	BlockingQueue<Object> viewQueue = new ArrayBlockingQueue<Object>(1024);		//queue to contoller
 	DBModel db = null;
-	//Simulator sim = new Simulator(simQueue);	//place holder for simulation object									
+	//Simulator sim = new Simulator(simQueue);	//place holder for simulation object
 	//used by the controller for creation - passes the queue for consumption
 	public Model (BlockingQueue<Object> viewQueue){
 		this.viewQueue = viewQueue;
@@ -19,13 +19,14 @@ public class Model extends ThreadModel{
 	private Model (){
 	}
 	@SuppressWarnings("rawtypes")
+        @Override
 	public void run(){
 		Map map = null;
 		//new Thread(sim).start();
 		while (this.isRunning()){							//add && (!sim.complete())
 			System.out.println("STARTING MODELTHREAD");
 			while (!this.isPaused()){
-				try { 
+				try {
 					map = dequeue(simQueue);	//retrieves data from simulator
 					this.db.storeMap(map);		//presents to the DBModel for processing
 					enqueue(viewQueue,map);		//returns the values to the controller
@@ -39,7 +40,7 @@ public class Model extends ThreadModel{
 			}
 		}
 	}
-	
+
 	//used by the controller to update the configuration
 	public void updateConfig(String Name,int  StoragePrecision,int TemporalPrecision,int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length){
 		if (this.isDebug()) { System.out.println("UDPATING SIM CONFIGURATION"); }
@@ -57,13 +58,14 @@ public class Model extends ThreadModel{
 		//this.sim.stop();
 		this.stop();
 	}
+        @Override
 	public void pause(){
 		if (this.isDebug()) { System.out.println("MODEL PAUSED"); }
 		//this.sim.pause();
 		try { this.db.manualCommit();
-		} catch (SQLException e) {	
-			e.printStackTrace(); 
-			this.stop(); 
+		} catch (SQLException e) {
+			e.printStackTrace();
+			this.stop();
 		}
 		this.pause();
 	}
@@ -96,11 +98,11 @@ public class Model extends ThreadModel{
 				this.db.storeMap(map);
 				enqueue(viewQueue,map);
 		}
-		
+
 		view.stop();			//stops viewer
-		this.db.closeDBSession();	//cleans up the db 
+		this.db.closeDBSession();	//cleans up the db
 		this.stop();
-		
+
 	}
-	
+
 }
