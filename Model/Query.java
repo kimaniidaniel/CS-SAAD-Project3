@@ -6,21 +6,20 @@
 package Model;
 
 import Utils.TemperatureReading;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  *
  * @author kimaniidaniel
  */
-public class Query
+public class Query implements Serializable
 {
-    public long StartDate;
-    public long EndDate;
-    public long StartTime;
-    public long EndTime;
+    public long StartDateTime;
+    public long EndDateTime;
     public double LatitudeStart;
     public double LatitudeEnd;
-    public long LongitudeStart;
-    public long LongitudeEnd;
+    public double LongitudeStart;
+    public double LongitudeEnd;
     public List<TemperatureReading> Result;
 }
