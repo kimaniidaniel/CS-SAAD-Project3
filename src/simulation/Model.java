@@ -14,7 +14,7 @@ public class Model extends ComponentBase {
 	
 	public Model(int gs, int timeStep) {
 		model = new Earth();
-		model.configure(gs, timeStep);
+		model.configure(gs, timeStep, -1);
 		model.start();
 	}
 	

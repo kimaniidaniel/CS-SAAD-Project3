@@ -13,7 +13,7 @@ public class testGridCell {
 		// Tsun should be smaller with longer distance
 		Earth newearth   = new Earth();
 		newearth.setcurrentStep(0);
-		newearth.configure(1,1);
+		newearth.configure(1,1,-1);
 		newearth.start();
 		newearth.generate();
 		float perihelion_tmp = GridCell.getAvgSuntemp();

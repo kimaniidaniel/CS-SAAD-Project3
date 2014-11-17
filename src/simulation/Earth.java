@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import simulation.util.GridCell;
-import common.Buffer;
-import common.Grid;
-import common.IGrid;
+//import common.Buffer;
+import simulation.util.Grid;
+import simulation.util.IGrid;
 
 public final class Earth {
 
@@ -22,6 +22,7 @@ public final class Earth {
 	private static final int DEFAULT_SPEED = 1; // minutes
 	private static final int MAX_DEGREES = 180;
 	private static final int MAX_SPEED = 1440;
+	private static final int DEFAULT_SIM_LENGTH = 12 * 30 * 1440;  // one Solar year
 
 	private static final int[] increments = { 1,2,3,4,5,6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180 };
 
@@ -33,6 +34,10 @@ public final class Earth {
 	private static GridCell prime = null;
 	private int timeStep = DEFAULT_SPEED;
 	private int gs = DEFAULT_DEGREES;
+	private int simlen = DEFAULT_SIM_LENGTH;
+	private boolean alive = true;
+	private boolean paused = false;
+	private boolean done = true;
 	
 	//private ArrayBlockingQueue<IGrid> q;
 
@@ -41,7 +46,8 @@ public final class Earth {
 	public static double E = 0.0167; 					//Eccentricity of the planet earth
 	//public static final double E = 0.9; 					//EXPERIMENTAL VALUE TO SEE AN ACTUAL ELLIPSE
 	public static final double omega = 114;					//Argument of periapsis for the Earth:
-	public static double tilt = 23.44;				//Obliquity(tilt) of the planet
+	//public static double tilt = 23.44;				//Obliquity(tilt) of the planet
+	public static double tilt = 180;				//Obliquity(tilt) of the planet
 	public static int tauAN = 0;								//Time of the Equinox
 	public static int currentTimeInSimulation = 0;
 	
@@ -62,8 +68,9 @@ public final class Earth {
 		return prime;
 	}
 
-	public void configure(int gs, int timeStep) {
-
+	public void configure(int gs, int timeStep, int simlength) {
+		// sim length is in minute
+		
 		if (gs <= 0 || gs > MAX_DEGREES)
 			throw new IllegalArgumentException("Invalid grid spacing");
 
@@ -83,9 +90,16 @@ public final class Earth {
 			System.out.println("gs: " + this.gs);
 		} else
 			this.gs = gs;
+		
+		if (simlength != -1) {
+			this.simlen = simlength;
+		}
 	}
 
 	public void start() {
+		
+		// reset the current time in simulation
+		currentTimeInSimulation = 0;
 		
 		int x = 0, y = 0;
 
@@ -153,12 +167,30 @@ public final class Earth {
 		GridCell.setAverageArea(totalarea / (width * height));
 	}
 
+	public void run() throws InterruptedException {
+		this.done = false;
+		while (alive && currentTimeInSimulation < this.simlen) {
+			while (! this.isPaused()  && currentTimeInSimulation < this.simlen) {
+				this.generate();
+			}
+		}
+		this.done = true;
+	}
+	
+	public boolean isPaused() {
+		return this.paused;
+	}
+	
+	public boolean isDone() {
+		return this.done;
+	}
+	
 	public void generate() throws InterruptedException {
 		
 		// Don't attempt to generate if output queue is full...
-		//if(Buffer.getBuffer().getRemainingCapacity() == 0) {
-		//	return;
-		//}
+//		if(Buffer.getBuffer().getRemainingCapacity() == 0) {
+//			return;
+//		}
 		
 		//System.out.println("generating grid...");
 		Queue<GridCell> bfs = new LinkedList<GridCell>();
@@ -188,7 +220,10 @@ public final class Earth {
 		bfs.add(prime);
 		
 		//P3 - Heated Planet
+		//Earth.currentTimeInSimulation = t * 100;  // for speeding up the simulation
 		Earth.currentTimeInSimulation = t;
+		System.out.println("Current time on Earth:" + Earth.currentTimeInSimulation);
+		System.out.println("Distance from the Sun:" + prime.distanceFromPlanet(Earth.currentTimeInSimulation));
 
 		while (!bfs.isEmpty()) {
 
@@ -311,22 +346,22 @@ public final class Earth {
 		Earth.tilt = newTilt;
 	}
 	
-	private static void printGrid(){
-		GridCell curr = prime;
-		//System.out.println(height);
-		//System.out.println(width);
-		float total = 0;
-		for (int x = 0; x < height; x++) {
-			GridCell rowgrid = curr.getLeft();
-			for (int y = 0; y < width; y++) {
-				System.out.printf("%.2f,",rowgrid.getTemp());
-				rowgrid = rowgrid.getLeft();
-				total += rowgrid.getTemp() - 288;
-			}
-			System.out.println();
-			curr = curr.getTop();
-		}
-		System.out.println(total);
-	}
+//	private static void printGrid(){
+//		GridCell curr = prime;
+//		//System.out.println(height);
+//		//System.out.println(width);
+//		float total = 0;
+//		for (int x = 0; x < height; x++) {
+//			GridCell rowgrid = curr.getLeft();
+//			for (int y = 0; y < width; y++) {
+//				System.out.printf("%.2f,",rowgrid.getTemp());
+//				rowgrid = rowgrid.getLeft();
+//				total += rowgrid.getTemp() - 288;
+//			}
+//			System.out.println();
+//			curr = curr.getTop();
+//		}
+//		System.out.println(total);
+//	}
 	
 }
