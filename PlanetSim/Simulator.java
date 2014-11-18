@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import PlanetSim.util.GridCell;
@@ -14,7 +13,7 @@ import PlanetSim.util.GridCell;
 import PlanetSim.util.Grid;
 import PlanetSim.util.IGrid;
 
-public final class Earth extends ThreadModel {
+public final class Simulator extends ThreadModel {
 
 	public static final double CIRCUMFERENCE = 4.003014 * Math.pow(10, 7);
 	public static final double SURFACE_AREA = 5.10072 * Math.pow(10, 14);
@@ -40,21 +39,17 @@ public final class Earth extends ThreadModel {
 	private int timeStep = DEFAULT_SPEED;
 	private int gs = DEFAULT_DEGREES;
 	private int simlen = DEFAULT_SIM_LENGTH;
-	private boolean alive = true;
-	private boolean paused = false;
-	private boolean done = true;
 	
-	BlockingQueue queue = null;
+	BlockingQueue<Object> queue = null;
 	Map<String, Number> map = new HashMap<String, Number>();
-	ArrayList<Map> list = new ArrayList();
 
 	//P3 Heated Planet
 	public static final double T = 525974.4;				//Orbital period of Earth in minutes
 	public static double E = 0.0167; 					//Eccentricity of the planet earth
 	//public static final double E = 0.9; 					//EXPERIMENTAL VALUE TO SEE AN ACTUAL ELLIPSE
 	public static final double omega = 114;					//Argument of periapsis for the Earth:
-	//public static double tilt = 23.44;				//Obliquity(tilt) of the planet
-	public static double tilt = 180;				//Obliquity(tilt) of the planet
+	public static double tilt = 23.44;				//Obliquity(tilt) of the planet
+	//public static double tilt = 180;				//Obliquity(tilt) of the planet
 	public static int tauAN = 0;								//Time of the Equinox
 	public static int currentTimeInSimulation = 0;
 	
@@ -63,16 +58,14 @@ public final class Earth extends ThreadModel {
 	public static final double a = 1.496 * Math.pow(10, 11);//Length of the semi-major axis of earth IN METERS
 	public static final double factor = animationGreatestDimention/2*a;
 	public static final double b =  a * (Math.sqrt(1-(E * E)));
-	
-	
 
 	
-	public Earth() {
+	public Simulator() {
 		//this.q = q;
 		
 	}
 
-	public Earth(BlockingQueue q) {
+	public Simulator(BlockingQueue<Object> q) {
 		this.queue = q;
 		
 	}
@@ -81,8 +74,10 @@ public final class Earth extends ThreadModel {
 		return prime;
 	}
 
-	public void configure() {
-		
+	public void configure(double eccentricity, double Tilt, int gs, int timeStep, int simlength) {
+		E = eccentricity;
+		tilt = Tilt;
+		configure(gs, timeStep, simlength);
 	}
 	
 	public void configure(int gs, int timeStep, int simlength) {
@@ -111,9 +106,13 @@ public final class Earth extends ThreadModel {
 		if (simlength != -1) {
 			this.simlen = simlength;
 		}
+		
+		this.start();
+		
+		this.resume();
 	}
 
-	public void start() {
+	private void start() {
 		
 		// reset the current time in simulation
 		currentTimeInSimulation = 0;
@@ -185,24 +184,30 @@ public final class Earth extends ThreadModel {
 	}
 
 	public void run() {
-		this.done = false;
-		while (alive && currentTimeInSimulation < this.simlen) {
-			while (! this.isPaused()  && currentTimeInSimulation < this.simlen) {
-				this.generate();
+		System.out.println("still running");
+		while (this.isRunning()) {
+			while (! this.isPaused() && ! this.isComplete()) {
+				try {
+					this.generate();
+					System.out.println("still running");
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					System.exit(0);
+				}
 			}
 		}
-		this.done = true;
 	}
 	
-	public boolean isPaused() {
-		return this.paused;
+	public boolean isComplete() {
+		if (currentTimeInSimulation < this.simlen){
+			return false;
+		} else {
+			this.stop();
+			return true;
+		}		
 	}
 	
-	public boolean isDone() {
-		return this.done;
-	}
-	
-	public void generate() {
+	public void generate() throws InterruptedException {
 		
 		// Don't attempt to generate if output queue is full...
 //		if(Buffer.getBuffer().getRemainingCapacity() == 0) {
@@ -238,9 +243,9 @@ public final class Earth extends ThreadModel {
 		
 		//P3 - Heated Planet
 		//Earth.currentTimeInSimulation = t * 100;  // for speeding up the simulation
-		Earth.currentTimeInSimulation = t;
-		System.out.println("Current time on Earth:" + Earth.currentTimeInSimulation);
-		System.out.println("Distance from the Sun:" + prime.distanceFromPlanet(Earth.currentTimeInSimulation));
+		Simulator.currentTimeInSimulation = t;
+		System.out.println("Current time on Earth:" + Simulator.currentTimeInSimulation);
+		System.out.println("Distance from the Sun:" + prime.distanceFromPlanet(Simulator.currentTimeInSimulation));
 
 		while (!bfs.isEmpty()) {
 
@@ -258,6 +263,11 @@ public final class Earth extends ThreadModel {
 				grid.setTemperature(child.getX(), child.getY(), calcdTemp);
 				bfs.add(child);
 				suntotal += child.calTsun(sunPositionCell);
+				
+				map.put("Lon", (double) child.getLongitude());
+				map.put("Lat", (double) child.getLatitude());
+				map.put("Temp", (double) child.getTemp());
+				map.put("Iter", Simulator.currentTimeInSimulation);
 			}
 		}
 
@@ -271,15 +281,14 @@ public final class Earth extends ThreadModel {
 
 		//Set display values here
 		grid.setSunLatitudeDeg((float) (-1 * prime.getSunLatitudeOnEarth()));
-		grid.setPlanetX(prime.getPlanetX(Earth.currentTimeInSimulation));
-		grid.setPlanetY(prime.getPlanetY(Earth.currentTimeInSimulation));
+		grid.setPlanetX(prime.getPlanetX(Simulator.currentTimeInSimulation));
+		grid.setPlanetY(prime.getPlanetY(Simulator.currentTimeInSimulation));
 		
 		//P3 Heated Planet: Set time of equinox
 		setTimeOfEquinox();
-		
-		//Buffer.getBuffer().add(grid);
+
 		// Adding data to array block queue
-		queue.put(grid);
+		queue.put(map);
 	}
 
 	private void createRow(GridCell curr, GridCell next, GridCell bottom,
@@ -341,10 +350,10 @@ public final class Earth extends ThreadModel {
 		// What I got is actually April 22nd, the beginning day is Jan. 1st.
 		int t=0;
 		double distClose = 1000;
-		for ( ; t < Earth.T; t++) {
+		for ( ; t < Simulator.T; t++) {
 			double trueAnomaly = prime.trueAnomaly(t);
 			//System.out.println("\n" + "trueAnamoly " + trueAnamoly);
-			double dist = Math.abs(Math.toRadians(Earth.omega)- trueAnomaly);
+			double dist = Math.abs(Math.toRadians(Simulator.omega)- trueAnomaly);
 			if(dist <= distClose)			//Try 10 as a limit to try first
 			{
 				tauAN = t;
@@ -358,11 +367,11 @@ public final class Earth extends ThreadModel {
 	}
 	
 	public void setE(double newE) {
-		Earth.E = newE;
+		Simulator.E = newE;
 	}
 	
 	public void setTilt(double newTilt) {
-		Earth.tilt = newTilt;
+		Simulator.tilt = newTilt;
 	}
 	
 //	private static void printGrid(){
