@@ -6,11 +6,14 @@ public class ThreadModel implements Runnable {
 	
 	private final int BUFFER_SIZE = 32;
 	private final boolean debug = true;
+	private volatile boolean running = true;
+	private volatile boolean pause = true;
 	private String thread_name;
 	
 	@Override
 	public void run() {
-		//default and needed in the creation of the class
+		// TODO Auto-generated method stub
+		
 	}
 	
 	public void setThreadName( String name){
@@ -21,6 +24,23 @@ public class ThreadModel implements Runnable {
 	}
 	public boolean isDebug(){
 		return this.debug;
+	}
+	
+	public boolean isRunning(){
+		return this.running;
+	}
+	public boolean isPaused(){
+		return this.pause;
+	}
+
+	public void pause(){
+		this.pause = true;
+	}
+	public void resume(){
+		this.pause = false;
+	}
+	public void stop(){
+		this.running = false;
 	}
 
 }
