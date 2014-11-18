@@ -1,6 +1,5 @@
 package PlanetSim;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -10,7 +9,6 @@ public class FauxSimulator extends ThreadModel  {
 	BlockingQueue<Object> queue = null;
 	Map<String, Number> map = new HashMap<String, Number>();
 	@SuppressWarnings("rawtypes")
-	ArrayList<Map> list = new ArrayList<Map>();
 	boolean paused = false;
 	boolean done = false;
 	FauxSimulator(BlockingQueue<Object> simQueue){
