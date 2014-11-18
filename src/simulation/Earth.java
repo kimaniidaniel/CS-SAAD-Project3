@@ -3,6 +3,7 @@ package simulation;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import simulation.util.GridCell;
 //import common.Buffer;
@@ -39,7 +40,7 @@ public final class Earth {
 	private boolean paused = false;
 	private boolean done = true;
 	
-	//private ArrayBlockingQueue<IGrid> q;
+	private ArrayBlockingQueue<IGrid> q;
 
 	//P3 Heated Planet
 	public static final double T = 525974.4;				//Orbital period of Earth in minutes
@@ -261,6 +262,8 @@ public final class Earth {
 		setTimeOfEquinox();
 		
 		//Buffer.getBuffer().add(grid);
+		// Adding data to array block queue
+		q.put(grid);
 	}
 
 	private void createRow(GridCell curr, GridCell next, GridCell bottom,
