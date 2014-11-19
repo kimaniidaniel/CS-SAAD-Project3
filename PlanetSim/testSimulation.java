@@ -13,7 +13,7 @@ public class testSimulation {
 
 	@Test
 	public void testEquinoxes() throws InterruptedException {
-		BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(1024);
+		BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(5000);
 		Simulator newearth = new Simulator(simQueue);
 		newearth.configure(1, 1, 4000);
 		// configuration for Earth
@@ -34,8 +34,10 @@ public class testSimulation {
 	@Test
 	public void testBasicSimulation() throws InterruptedException {
 		// Test simulation setting up
-		Simulator newearth = new Simulator();
-		newearth.configure(1, 1, 10);
+		BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(1024);
+		Simulator newearth = new Simulator(simQueue);
+		newearth.configure(60, 1, 10);
+		Simulator.printGrid();
 		new Thread(newearth).start();
 		while (newearth.isRunning()){};
 		System.out.println(Simulator.currentTimeInSimulation);

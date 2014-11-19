@@ -339,14 +339,12 @@ public final class GridCell implements EarthCell<GridCell> {
 
 	@Override
 	public int getLatitude() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.latitude;
 	}
 
 	@Override
 	public int getLongitude() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.longitude;
 	}
 }
 

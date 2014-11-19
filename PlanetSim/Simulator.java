@@ -264,10 +264,13 @@ public final class Simulator extends ThreadModel {
 				bfs.add(child);
 				suntotal += child.calTsun(sunPositionCell);
 				
+//				System.out.println(child.getLongitude());
 				map.put("Lon", (double) child.getLongitude());
 				map.put("Lat", (double) child.getLatitude());
 				map.put("Temp", (double) child.getTemp());
 				map.put("Iter", Simulator.currentTimeInSimulation);
+				// Adding data to array block queue
+				queue.put(map);
 			}
 		}
 
@@ -286,11 +289,8 @@ public final class Simulator extends ThreadModel {
 		
 		//P3 Heated Planet: Set time of equinox
 		setTimeOfEquinox();
-
-		// Adding data to array block queue
-		queue.put(map);
 	}
-
+	
 	private void createRow(GridCell curr, GridCell next, GridCell bottom,
 			GridCell left, int y) {
 
@@ -374,22 +374,30 @@ public final class Simulator extends ThreadModel {
 		Simulator.tilt = newTilt;
 	}
 	
-//	private static void printGrid(){
-//		GridCell curr = prime;
-//		//System.out.println(height);
-//		//System.out.println(width);
-//		float total = 0;
-//		for (int x = 0; x < height; x++) {
-//			GridCell rowgrid = curr.getLeft();
-//			for (int y = 0; y < width; y++) {
+	public static void printGrid(){
+		GridCell curr = prime;
+		//System.out.println(height);
+		//System.out.println(width);
+		float total = 0;
+		for (int x = 0; x < height; x++) {
+			GridCell rowgrid = curr.getLeft();
+			for (int y = 0; y < width; y++) {
+				//System.out.printf("%.2f,",rowgrid.getLongitude());
+				System.out.printf("%2d,",rowgrid.getLongitude());
 //				System.out.printf("%.2f,",rowgrid.getTemp());
-//				rowgrid = rowgrid.getLeft();
-//				total += rowgrid.getTemp() - 288;
-//			}
-//			System.out.println();
-//			curr = curr.getTop();
-//		}
-//		System.out.println(total);
-//	}
+				rowgrid = rowgrid.getLeft();
+				total += rowgrid.getTemp() - 288;
+			}
+			System.out.println();
+			curr = curr.getTop();
+		}
+		System.out.println(total);
+	}
 	
+	private void printMap(Map<String, Number> map){
+		System.out.println("Lon:" + map.get("Lon"));
+		System.out.println("Lat:" + map.get("Lat"));
+		System.out.println("Temp:" + map.get("Temp"));
+		System.out.println("Iter:" + map.get("Iter"));
+	}
 }
