@@ -1,4 +1,4 @@
-package PlanetSim;
+package UnitTests;
 
 public class testingModel {
 

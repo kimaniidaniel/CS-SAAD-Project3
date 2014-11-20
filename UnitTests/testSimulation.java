@@ -1,5 +1,7 @@
-package PlanetSim;
+package UnitTests;
 
+import PlanetSim.Simulator;
+import PlanetSim.Simulator;
 import static org.junit.Assert.*;
 
 import java.util.concurrent.ArrayBlockingQueue;

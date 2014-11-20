@@ -354,7 +354,7 @@ public class DBModel
     {
         this.conn.commit();
     }
-    
+
     /**
      * Query the database for simulated stored data
      */
@@ -374,10 +374,10 @@ public class DBModel
         sqlCommand += ((Orbit)>0)               ?"":String.format(" AND Orbit = %f", Orbit);
         sqlCommand += ((Tilt)>0)                ?"":String.format(" AND Tilt = %f", Tilt);
         sqlCommand += ((GridSpacing)>0)         ?"":String.format(" AND GridSpacing = %d", GridSpacing);
-             
+
         try {
             Statement stmt = this.conn.createStatement();                                                           /* Execute SQL command */
-            rs = stmt.executeQuery(sqlCommand); 
+            rs = stmt.executeQuery(sqlCommand);
             while ( rs.next() ) {                                                                                   /* Iterate through the resulting recordset and build the SimulationConfig object */
                 Utils.SimulationConfig simConfig = new Utils.SimulationConfig();
                 simConfig.setConfigId(rs.getInt("CONFIG_ID"));
@@ -391,8 +391,8 @@ public class DBModel
                 simConfig.GridSpacing           = rs.getInt("GridSpacing");
                 simConfig.TimeStep              = rs.getInt("TimeStep");
                 simConfig.Length                = rs.getInt("Length");
-                simConfig.TemperatureReadings = QueryGetSimCells(configId);                                         /* Get all cells for this config and add it to the collection */
-                
+                simConfig.TemperatureReadings   = QueryGetSimCells(configId);                                         /* Get all cells for this config and add it to the collection */
+
                 SimulationConfigs.add(simConfig);
             }
         } catch (SQLException ex) {
@@ -404,7 +404,7 @@ public class DBModel
                 Logger.getLogger(DBModel.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         return SimulationConfigs;
     }
 
@@ -418,7 +418,7 @@ public class DBModel
         sqlCommand = String.format("SELECT * FROM '%s' WHERE CONFIG_ID = %d ", PLANET_CELLS_TBL, configId);         /* query cell details */
         try {
             Statement stmt = this.conn.createStatement();
-            rs = stmt.executeQuery(sqlCommand); 
+            rs = stmt.executeQuery(sqlCommand);
             while ( rs.next() ) {                                                                                   /* fill TemperatureReading object */
                 Utils.TemperatureReading reading = new Utils.TemperatureReading();
                 reading.ConfigId        = rs.getInt("CONFIG_ID");
@@ -440,17 +440,17 @@ public class DBModel
                 Logger.getLogger(DBModel.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         return TemperaturReadings;
     }
-    
+
     /**
      * Return true if string is empty or null
      */
     private boolean isEmptyOrNull(String s){
         return "".equals(s) || s==null;
     }
-    
+
     /**
      * Return if String is empty
      */
