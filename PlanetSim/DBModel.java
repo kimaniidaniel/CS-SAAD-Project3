@@ -11,14 +11,20 @@
 //-t #: The temporal precision of the temperature data to be stored, as an integer percentage of the number of time periods saved versus the number computed. The default is 100%; that is, all computed values should be stored.
 package PlanetSim;
 
+import Utils.SimulationConfig;
+import Utils.TemperatureReading;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DBModel
 {
@@ -347,6 +353,109 @@ public class DBModel
     public void manualCommit() throws SQLException
     {
         this.conn.commit();
+    }
+    
+    /**
+     * Query the database for simulated stored data
+     */
+    public List<SimulationConfig> Query(String Name, int StoragePrecision, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing)
+    {
+        String sqlCommand = String.format("SELECT * FROM '%s' WHERE 1=1 ", SIM_CONFIG_TBL);
+        ResultSet rs = null;
+        int configId = 0;
+        List<Utils.SimulationConfig> SimulationConfigs = new ArrayList<>();
+        List<Utils.TemperatureReading> TemperaturReadings = new ArrayList<>();
+                                                                                                                    /* Build query SQL command */
+        sqlCommand += (isEmptyOrNull(Name))     ?"":String.format(" AND Name ='%s'", Name);
+        sqlCommand += ((StoragePrecision)>0)    ?"":String.format(" AND StoragePrecision = %d", StoragePrecision);
+        sqlCommand += ((TemporalPrecision)>0)   ?"":String.format(" AND TemporalPrecision = %d", TemporalPrecision);
+        sqlCommand += ((GeographicalPrecision)>0)?"":String.format(" AND GeographicalPrecision = %d", GeographicalPrecision);
+        sqlCommand += (isEmptyOrNull(StartDate))?"":String.format(" AND StartDate <= '%s'", StartDate);
+        sqlCommand += ((Orbit)>0)               ?"":String.format(" AND Orbit = %f", Orbit);
+        sqlCommand += ((Tilt)>0)                ?"":String.format(" AND Tilt = %f", Tilt);
+        sqlCommand += ((GridSpacing)>0)         ?"":String.format(" AND GridSpacing = %d", GridSpacing);
+             
+        try {
+            Statement stmt = this.conn.createStatement();                                                           /* Execute SQL command */
+            rs = stmt.executeQuery(sqlCommand); 
+            while ( rs.next() ) {                                                                                   /* Iterate through the resulting recordset and build the SimulationConfig object */
+                Utils.SimulationConfig simConfig = new Utils.SimulationConfig();
+                simConfig.setConfigId(rs.getInt("CONFIG_ID"));
+                simConfig.EntryTime             = rs.getTimestamp("EntryTime");
+                simConfig.GeographicPrecision   = rs.getInt("GeographicalPrecision");
+                simConfig.StoragePrecision      = rs.getInt("StoragePrecision");
+                simConfig.TemporalPrecision     = rs.getInt("TemporalPrecision");
+                simConfig.Orbit                 = rs.getDouble("Orbit");
+                simConfig.Tilt                  = rs.getDouble("Tilt");
+                simConfig.StartDate             = rs.getNString("StartDate");
+                simConfig.GridSpacing           = rs.getInt("GridSpacing");
+                simConfig.TimeStep              = rs.getInt("TimeStep");
+                simConfig.Length                = rs.getInt("Length");
+                simConfig.TemperatureReadings = QueryGetSimCells(configId);                                         /* Get all cells for this config and add it to the collection */
+                
+                SimulationConfigs.add(simConfig);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DBModel.class.getName()).log(Level.SEVERE, null, ex);                                  /* Log errors */
+        } finally {
+            try {
+                rs.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBModel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        return SimulationConfigs;
+    }
+
+    /**
+     * Queries Cell information based on configId and returns a list of TemperatureReading
+     */
+    private List<TemperatureReading> QueryGetSimCells(int configId ) {
+        String sqlCommand;
+        ResultSet rs = null;
+        List<TemperatureReading> TemperaturReadings = new ArrayList<>();
+        sqlCommand = String.format("SELECT * FROM '%s' WHERE CONFIG_ID = %d ", PLANET_CELLS_TBL, configId);         /* query cell details */
+        try {
+            Statement stmt = this.conn.createStatement();
+            rs = stmt.executeQuery(sqlCommand); 
+            while ( rs.next() ) {                                                                                   /* fill TemperatureReading object */
+                Utils.TemperatureReading reading = new Utils.TemperatureReading();
+                reading.ConfigId        = rs.getInt("CONFIG_ID");
+                reading.Latitude        = rs.getDouble("Latitude");
+                reading.Longitude       = rs.getDouble("Longitude");
+                reading.Step            = rs.getInt("Step");
+                reading.Temperatue      = rs.getDouble("Temperature");
+                reading.ReadingDate     = rs.getLong("Reading_Date");
+                reading.ReadingTime     = rs.getLong("Reading_Time");
+                reading.TransActionTime = rs.getNString("TransActionTime");
+                TemperaturReadings.add(reading);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DBModel.class.getName()).log(Level.SEVERE, null, ex);                                  /* log any error */
+        } finally {
+            try {
+                rs.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBModel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        return TemperaturReadings;
+    }
+    
+    /**
+     * Return true if string is empty or null
+     */
+    private boolean isEmptyOrNull(String s){
+        return "".equals(s) || s==null;
+    }
+    
+    /**
+     * Return if String is empty
+     */
+    private boolean isEmpty(String s){
+        return "".equals(s);
     }
 
 }

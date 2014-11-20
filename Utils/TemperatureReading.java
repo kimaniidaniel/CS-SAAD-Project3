@@ -6,13 +6,16 @@
 package Utils;
 
 /**
- *
  * @author kimaniidaniel
  */
 public class TemperatureReading
 {
-    public double latitude;
-    public double longitude;
-    public long temperatue;
-    public long time;
+    public int ConfigId;
+    public double Latitude;
+    public double Longitude;
+    public double Temperatue;
+    public int Step;
+    public long ReadingDate;
+    public long ReadingTime;
+    public String TransActionTime;
 }
