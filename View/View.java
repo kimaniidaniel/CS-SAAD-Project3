@@ -34,7 +34,10 @@ import javax.swing.SpinnerDateModel;
 import java.util.Date;
 import java.util.Calendar;
 
-public class View extends JFrame {
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+public class View extends JFrame implements Runnable {
 	
 	// Constants used in the GUI
 	static final int WIN_WIDTH = 835;
@@ -73,11 +76,28 @@ public class View extends JFrame {
 			}
 		});
 	}
+	
+	/**
+	 * This should be all we need to put this in its own thread
+	 */
+	@Override
+	public void run() {
+		try {
+			View frame = new View();
+			frame.setTitle("Heated Planet Simulator");
+			frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+			frame.setResizable(false);
+			frame.setVisible(true);
+			frame.pack();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Create the frame.
 	 */
-	public View() {
+	public View(BlockingQueue<Object> displayQueue) { //TODO we still need to add the functionality to display the queue
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(50, 50, WIN_WIDTH, WIN_HEIGHT);
 		contentPane = new JPanel();
