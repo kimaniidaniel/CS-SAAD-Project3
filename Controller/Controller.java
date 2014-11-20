@@ -19,7 +19,7 @@ public class Controller extends ThreadModel{
 	View ui = new View(viewQueue); //TODO view still needs ?threading? and displaying added to it
 	Model model = new Model(modelQueue);
 	
-	Thread uiThread = new Thread(view);
+	Thread uiThread = new Thread(view); // Thread deprecated the stop, suspend, and pause methods
 	
 	@override
 	public void run(){
