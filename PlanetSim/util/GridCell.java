@@ -22,6 +22,8 @@ public final class GridCell implements EarthCell<GridCell> {
 
 	// Cell properties: surface area, perimeter
 	private float lv, lb, lt, surfarea, pm;
+	
+	private static final int suntemp = 278;
 
 	public GridCell(float temp, int x, int y, int latitude, int longitude, int gs) {
 
@@ -203,7 +205,7 @@ public final class GridCell implements EarthCell<GridCell> {
 		//return 278 * attenuation_lat * attenuation_longi;
 		//P3 - Heated Planet : Sun's distance from planet, inverse square law
 		double ratio = Math.pow((Simulator.a + Simulator.b)/2, 1) / Math.pow(distanceFromPlanet(Simulator.currentTimeInSimulation),1);
-		return (float) (278 * ratio * attenuation_lat * attenuation_longi); 
+		return (float) (suntemp * ratio * attenuation_lat * attenuation_longi); 
 		//============ Math.pow(distanceFromPlanet(Earth.currentTimeInSimulation),2));
 	}
 	
