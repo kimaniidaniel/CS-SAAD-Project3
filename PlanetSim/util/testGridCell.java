@@ -22,17 +22,17 @@ public class testGridCell {
 		newearth.generate();
 		float perihelion_tmp = GridCell.getAvgSuntemp();
 		
-//		System.out.println(perihelion_tmp);
+		System.out.println(perihelion_tmp);
 //		GridCell prime = newearth.getGrid();
-//		System.out.println(Math.pow((Simulator.a + Simulator.b)/2, 2) / Math.pow(prime.distanceFromPlanet(Simulator.currentTimeInSimulation),2));
+//		System.out.println(Math.pow((Simulator.a + Simulator.b)/2, 0.5) / Math.pow(prime.distanceFromPlanet(Simulator.currentTimeInSimulation),0.5));
 		
 		newearth.setcurrentStep(262800);
 		newearth.generate();
 		
 		float aphelion_tmp = GridCell.getAvgSuntemp();
 		
-//		System.out.println(aphelion_tmp);
-//		System.out.println(Math.pow((Simulator.a + Simulator.b)/2, 2) / Math.pow(prime.distanceFromPlanet(Simulator.currentTimeInSimulation),2));
+		System.out.println(aphelion_tmp);
+//		System.out.println(Math.pow((Simulator.a + Simulator.b)/2, 0.5) / Math.pow(prime.distanceFromPlanet(Simulator.currentTimeInSimulation),0.5));
 		
 		assertTrue("The average temp at perihelion should be larger than at aphelion", perihelion_tmp > aphelion_tmp);
 	}

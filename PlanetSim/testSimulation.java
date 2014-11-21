@@ -56,4 +56,9 @@ public class testSimulation {
 		while (newearth.isRunning()){};
 		assertTrue("The current simulation should be done: ", newearth.isRunning() == false);
 	}
+	
+	@Test
+	public void testInitialSunLatitude() throws InterruptedException {
+		
+	}
 }
