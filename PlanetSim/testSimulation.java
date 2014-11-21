@@ -37,7 +37,7 @@ public class testSimulation {
 		BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(1024);
 		Simulator newearth = new Simulator(simQueue);
 		newearth.configure(60, 1, 10);
-		Simulator.printGrid();
+//		Simulator.printGrid();
 		new Thread(newearth).start();
 		while (newearth.isRunning()){};
 		System.out.println(Simulator.currentTimeInSimulation);

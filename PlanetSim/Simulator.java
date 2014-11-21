@@ -1,6 +1,5 @@
 package PlanetSim;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -35,7 +34,7 @@ public final class Simulator extends ThreadModel {
 	private static int height;
 	private int sunPositionCell;
 
-	private static GridCell prime = null;
+	private GridCell prime = null;
 	private int timeStep = DEFAULT_SPEED;
 	private int gs = DEFAULT_DEGREES;
 	private int simlen = DEFAULT_SIM_LENGTH;
@@ -378,30 +377,30 @@ public final class Simulator extends ThreadModel {
 		Simulator.tilt = newTilt;
 	}
 	
-	public static void printGrid(){
-		GridCell curr = prime;
-		//System.out.println(height);
-		//System.out.println(width);
-		float total = 0;
-		for (int x = 0; x < height; x++) {
-			GridCell rowgrid = curr.getLeft();
-			for (int y = 0; y < width; y++) {
-				//System.out.printf("%.2f,",rowgrid.getLongitude());
-//				System.out.printf("%2d,",rowgrid.getLongitude());
-				System.out.printf("%.2f,",rowgrid.getTemp());
-				rowgrid = rowgrid.getLeft();
-				total += rowgrid.getTemp() - 288;
-			}
-			System.out.println();
-			curr = curr.getTop();
-		}
-		System.out.println(total);
-	}
-	
-	private void printMap(Map<String, Number> map){
-		System.out.println("Lon:" + map.get("Lon"));
-		System.out.println("Lat:" + map.get("Lat"));
-		System.out.println("Temp:" + map.get("Temp"));
-		System.out.println("Iter:" + map.get("Iter"));
-	}
+//	public static void printGrid(){
+//		GridCell curr = prime;
+//		//System.out.println(height);
+//		//System.out.println(width);
+//		float total = 0;
+//		for (int x = 0; x < height; x++) {
+//			GridCell rowgrid = curr.getLeft();
+//			for (int y = 0; y < width; y++) {
+//				//System.out.printf("%.2f,",rowgrid.getLongitude());
+////				System.out.printf("%2d,",rowgrid.getLongitude());
+//				System.out.printf("%.2f,",rowgrid.getTemp());
+//				rowgrid = rowgrid.getLeft();
+//				total += rowgrid.getTemp() - 288;
+//			}
+//			System.out.println();
+//			curr = curr.getTop();
+//		}
+//		System.out.println(total);
+//	}
+//	
+//	private void printMap(Map<String, Number> map){
+//		System.out.println("Lon:" + map.get("Lon"));
+//		System.out.println("Lat:" + map.get("Lat"));
+//		System.out.println("Temp:" + map.get("Temp"));
+//		System.out.println("Iter:" + map.get("Iter"));
+//	}
 }

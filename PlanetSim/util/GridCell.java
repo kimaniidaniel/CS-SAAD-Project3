@@ -202,7 +202,7 @@ public final class GridCell implements EarthCell<GridCell> {
 		
 		//return 278 * attenuation_lat * attenuation_longi;
 		//P3 - Heated Planet : Sun's distance from planet, inverse square law
-		double ratio = Math.pow((Simulator.a + Simulator.b)/2, 2) / Math.pow(distanceFromPlanet(Simulator.currentTimeInSimulation),2);
+		double ratio = Math.pow((Simulator.a + Simulator.b)/2, 1) / Math.pow(distanceFromPlanet(Simulator.currentTimeInSimulation),1);
 		return (float) (278 * ratio * attenuation_lat * attenuation_longi); 
 		//============ Math.pow(distanceFromPlanet(Earth.currentTimeInSimulation),2));
 	}
