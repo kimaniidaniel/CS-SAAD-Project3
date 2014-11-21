@@ -49,10 +49,11 @@ public class testSimulation {
 	@Test
 	public void testIsDone() throws InterruptedException {
 		// Test isDone function
-		Simulator newearth = new Simulator();
-		newearth.configure(1, 1, 10);
+		BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(1024);
+		Simulator newearth = new Simulator(simQueue);
+		newearth.configure(60, 1, 10);
 		new Thread(newearth).start();
-		
+		while (newearth.isRunning()){};
 		assertTrue("The current simulation should be done: ", newearth.isRunning() == false);
 	}
 }

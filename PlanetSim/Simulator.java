@@ -179,6 +179,8 @@ public final class Simulator extends ThreadModel {
 			curr = curr.getTop();
 		}
 		// Set initial average temperature
+//		System.out.println("Initial sun temp: " + totaltemp / (width * height));
+//		System.out.println("Initial total area: " + totalarea / (width * height));
 		GridCell.setAvgSuntemp(totaltemp / (width * height));
 		GridCell.setAverageArea(totalarea / (width * height));
 	}
@@ -244,8 +246,8 @@ public final class Simulator extends ThreadModel {
 		//P3 - Heated Planet
 		//Earth.currentTimeInSimulation = t * 100;  // for speeding up the simulation
 		Simulator.currentTimeInSimulation = t;
-		System.out.println("Current time on Earth:" + Simulator.currentTimeInSimulation);
-		System.out.println("Distance from the Sun:" + prime.distanceFromPlanet(Simulator.currentTimeInSimulation));
+//		System.out.println("Current time on Earth:" + Simulator.currentTimeInSimulation);
+//		System.out.println("Distance from the Sun:" + prime.distanceFromPlanet(Simulator.currentTimeInSimulation));
 
 		while (!bfs.isEmpty()) {
 
@@ -264,7 +266,6 @@ public final class Simulator extends ThreadModel {
 				bfs.add(child);
 				suntotal += child.calTsun(sunPositionCell);
 				
-//				System.out.println(child.getLongitude());
 				map.put("Lon", (double) child.getLongitude());
 				map.put("Lat", (double) child.getLatitude());
 				map.put("Temp", (double) child.getTemp());
@@ -274,6 +275,9 @@ public final class Simulator extends ThreadModel {
 			}
 		}
 
+//		System.out.println("Current average sun temperature:");
+//		System.out.println(suntotal /  (width * height));
+		
 		GridCell.setAvgSuntemp(suntotal /  (width * height));
 		GridCell c = calcd.poll();
 		while (c != null) {
@@ -383,8 +387,8 @@ public final class Simulator extends ThreadModel {
 			GridCell rowgrid = curr.getLeft();
 			for (int y = 0; y < width; y++) {
 				//System.out.printf("%.2f,",rowgrid.getLongitude());
-				System.out.printf("%2d,",rowgrid.getLongitude());
-//				System.out.printf("%.2f,",rowgrid.getTemp());
+//				System.out.printf("%2d,",rowgrid.getLongitude());
+				System.out.printf("%.2f,",rowgrid.getTemp());
 				rowgrid = rowgrid.getLeft();
 				total += rowgrid.getTemp() - 288;
 			}
