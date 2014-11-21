@@ -192,7 +192,7 @@ public final class GridCell implements EarthCell<GridCell> {
 		
 		int   sunLongitude      = getSunLocationOnEarth(sunPosition);
 		//float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude  + 1.0 * this.gs / 2));
-		//P2 - Heated Planet : Find correct attenuation depending on the sun latitude
+		//P3 - Heated Planet : Find correct attenuation depending on the sun latitude
 		int   sunLatitude      = (int) getSunLatitudeOnEarth();
 		//System.out.println("\n" + "Sun Latitude is " + sunLatitude + " for Earth.currentTimeInSimulation " + Earth.currentTimeInSimulation);
 		float attenuation_lat   = (float) Math.cos(Math.toRadians(Math.abs((sunLatitude - this.latitude  - 1.0 * this.gs / 2))));
@@ -202,7 +202,7 @@ public final class GridCell implements EarthCell<GridCell> {
 		
 		//return 278 * attenuation_lat * attenuation_longi;
 		//P3 - Heated Planet : Sun's distance from planet, inverse square law
-		double ratio = Math.pow((Simulator.a + Simulator.b)/2, 0.5) / Math.pow(distanceFromPlanet(Simulator.currentTimeInSimulation),0.5);
+		double ratio = Math.pow((Simulator.a + Simulator.b)/2, 1) / Math.pow(distanceFromPlanet(Simulator.currentTimeInSimulation),1);
 		return (float) (278 * ratio * attenuation_lat * attenuation_longi); 
 		//============ Math.pow(distanceFromPlanet(Earth.currentTimeInSimulation),2));
 	}
@@ -339,14 +339,12 @@ public final class GridCell implements EarthCell<GridCell> {
 
 	@Override
 	public int getLatitude() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.latitude;
 	}
 
 	@Override
 	public int getLongitude() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.longitude;
 	}
 }
 
