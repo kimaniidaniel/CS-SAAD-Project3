@@ -23,7 +23,7 @@ public class testGridCell {
 		float perihelion_tmp = GridCell.getAvgSuntemp();
 		
 //		System.out.println(perihelion_tmp);
-		GridCell prime = newearth.getGrid();
+//		GridCell prime = newearth.getGrid();
 //		System.out.println(Math.pow((Simulator.a + Simulator.b)/2, 2) / Math.pow(prime.distanceFromPlanet(Simulator.currentTimeInSimulation),2));
 		
 		newearth.setcurrentStep(262800);
