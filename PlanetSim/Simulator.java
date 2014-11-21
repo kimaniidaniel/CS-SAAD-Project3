@@ -14,7 +14,7 @@ import PlanetSim.util.GridCell;
 import PlanetSim.util.Grid;
 import PlanetSim.util.IGrid;
 
-public final class Earth extends ThreadModel {
+public final class Simulator extends ThreadModel {
 
 	public static final double CIRCUMFERENCE = 4.003014 * Math.pow(10, 7);
 	public static final double SURFACE_AREA = 5.10072 * Math.pow(10, 14);
@@ -67,12 +67,12 @@ public final class Earth extends ThreadModel {
 	
 
 	
-	public Earth() {
+	public Simulator() {
 		//this.q = q;
 		
 	}
 
-	public Earth(BlockingQueue q) {
+	public Simulator(BlockingQueue q) {
 		this.queue = q;
 		
 	}
@@ -238,9 +238,9 @@ public final class Earth extends ThreadModel {
 		
 		//P3 - Heated Planet
 		//Earth.currentTimeInSimulation = t * 100;  // for speeding up the simulation
-		Earth.currentTimeInSimulation = t;
-		System.out.println("Current time on Earth:" + Earth.currentTimeInSimulation);
-		System.out.println("Distance from the Sun:" + prime.distanceFromPlanet(Earth.currentTimeInSimulation));
+		Simulator.currentTimeInSimulation = t;
+		System.out.println("Current time on Earth:" + Simulator.currentTimeInSimulation);
+		System.out.println("Distance from the Sun:" + prime.distanceFromPlanet(Simulator.currentTimeInSimulation));
 
 		while (!bfs.isEmpty()) {
 
@@ -271,8 +271,8 @@ public final class Earth extends ThreadModel {
 
 		//Set display values here
 		grid.setSunLatitudeDeg((float) (-1 * prime.getSunLatitudeOnEarth()));
-		grid.setPlanetX(prime.getPlanetX(Earth.currentTimeInSimulation));
-		grid.setPlanetY(prime.getPlanetY(Earth.currentTimeInSimulation));
+		grid.setPlanetX(prime.getPlanetX(Simulator.currentTimeInSimulation));
+		grid.setPlanetY(prime.getPlanetY(Simulator.currentTimeInSimulation));
 		
 		//P3 Heated Planet: Set time of equinox
 		setTimeOfEquinox();
@@ -341,10 +341,10 @@ public final class Earth extends ThreadModel {
 		// What I got is actually April 22nd, the beginning day is Jan. 1st.
 		int t=0;
 		double distClose = 1000;
-		for ( ; t < Earth.T; t++) {
+		for ( ; t < Simulator.T; t++) {
 			double trueAnomaly = prime.trueAnomaly(t);
 			//System.out.println("\n" + "trueAnamoly " + trueAnamoly);
-			double dist = Math.abs(Math.toRadians(Earth.omega)- trueAnomaly);
+			double dist = Math.abs(Math.toRadians(Simulator.omega)- trueAnomaly);
 			if(dist <= distClose)			//Try 10 as a limit to try first
 			{
 				tauAN = t;
@@ -358,11 +358,11 @@ public final class Earth extends ThreadModel {
 	}
 	
 	public void setE(double newE) {
-		Earth.E = newE;
+		Simulator.E = newE;
 	}
 	
 	public void setTilt(double newTilt) {
-		Earth.tilt = newTilt;
+		Simulator.tilt = newTilt;
 	}
 	
 //	private static void printGrid(){
