@@ -30,8 +30,8 @@ public final class Simulator extends ThreadModel {
 	private static final int[] increments = { 1,2,3,4,5,6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180 };
 
 	private int currentStep;
-	private static int width;
-	private static int height;
+	private int width;
+	private int height;
 	private int sunPositionCell;
 
 	private GridCell prime = null;
@@ -51,6 +51,7 @@ public final class Simulator extends ThreadModel {
 	//public static double tilt = 180;				//Obliquity(tilt) of the planet
 	public static int tauAN = 0;								//Time of the Equinox
 	public static int currentTimeInSimulation = 0;
+	private static float sunPositionDeg = 0;
 
 	//planet around sun animation
 	public static final double animationGreatestDimention = 150;
@@ -185,12 +186,12 @@ public final class Simulator extends ThreadModel {
 	}
 
 	public void run() {
-		System.out.println("still running");
+//		System.out.println("still running");
 		while (this.isRunning()) {
 			while (! this.isPaused() && ! this.isComplete()) {
 				try {
 					this.generate();
-					System.out.println("still running");
+//					System.out.println("still running");
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 					System.exit(0);
@@ -223,9 +224,9 @@ public final class Simulator extends ThreadModel {
 
 		int t = timeStep * currentStep;
 		int rotationalAngle = 360 - ((t % MAX_SPEED) * 360 / MAX_SPEED);
-		sunPositionCell = ( (width * rotationalAngle) / 360 + (width / 2) ) % width;
+		sunPositionCell = ( (width * rotationalAngle) / 360 ) % width;
 
-		float sunPositionDeg = rotationalAngle;
+		sunPositionDeg = rotationalAngle;
 		if(sunPositionDeg>180) {
 			sunPositionDeg = sunPositionDeg - 360;
 		}
@@ -378,6 +379,13 @@ public final class Simulator extends ThreadModel {
 		Simulator.tilt = newTilt;
 	}
 
+	public int getWidth() {
+		return this.width;
+	}
+	
+	public float getSunPositionDeg() {
+		return Simulator.sunPositionDeg;
+	}
 //	public static void printGrid(){
 //		GridCell curr = prime;
 //		//System.out.println(height);

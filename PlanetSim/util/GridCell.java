@@ -224,7 +224,7 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 
 	// A help function for get the Sun's corresponding location on longitude.
-	private int getSunLocationOnEarth(int sunPosition) {
+	public int getSunLocationOnEarth(int sunPosition) {
 		
 		// Grid column under the Sun at sunPosition
 		int cols = 360 / this.gs;
