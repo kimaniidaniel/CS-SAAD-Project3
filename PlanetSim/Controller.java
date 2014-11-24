@@ -2,26 +2,116 @@ package PlanetSim;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by amounib on 11/20/2014.
  */
-public class Controller extends ThreadModel {
-    private int precision;
-    private int geographicPrecision;
-    private int temporalPprecision;
+public class Controller extends ThreadModel{
+	private int precision;
+	private int geographicPrecision;
+	private int temporalPrecision;
+	static final String DEFAULT_DATE = "04-Jan-2012";
 
-    public Controller(ArrayList<Map> args){
+	// still confused about the queues but this can be changed
+	BlockingQueue<Object> viewQueue = new ArrayBlockingQueue<Object>(1024); // sending
+	BlockingQueue<Object> modelQueue = new ArrayBlockingQueue<Object>(1024); // receiving
 
-        for (Map map : args){
-            if (isKey("p",map)){ precision = (int)map.get("p"); }
-            if (isKey("g",map)){ geographicPrecision = (int)map.get("g"); }
-            if (isKey("t",map)){ temporalPprecision = (int)map.get("t"); }
-        }
+	View ui = new View(viewQueue); //TODO view still needs ?threading? and displaying added to it
+	Model model = new Model(modelQueue);
+	Thread uiThread = new Thread(ui); // Thread deprecated the stop, suspend, and pause methods
 
-    }
-    private boolean isKey(String targetKey,Map map){
-        Object temp = map.get(targetKey);
-        return temp != null;
-    }
+	public Controller(ArrayList<Map> args){
+		for (Map map : args){
+			if (isKey("p",map)){ precision = (int)map.get("p"); }
+			if (isKey("g",map)){ geographicPrecision = (int)map.get("g"); }
+			if (isKey("t",map)){ temporalPrecision = (int)map.get("t"); }
+		}
+	}
+		
+	private boolean isKey(String targetKey,Map map){
+		Object temp = map.get(targetKey);
+		return temp != null;
+	}
+	
+	@Override
+	public void run(){
+		uiThread.start();
+		
+		while (this.isRunning()){
+			while (!ui.newConfigStarted() && !ui.isRunning()){
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			//if (!ui.isRunning()){ System.exit(0); }
+
+			ui.configReset();		//reset new configuration flag
+			this.model.updateConfig(ui.getSimName(),temporalPrecision,geographicPrecision,DEFAULT_DATE,
+					ui.getOrbit(),ui.getTilt(),ui.getGSpacing(),ui.getStep(),ui.getDuration());
+			new Thread (model).start();
+			
+			while(!model.isComplete() && model.isRunning()){
+				if (ui.isPaused()){
+					model.pause();
+				}else{
+					if (!ui.isRunning()){
+						model.stop();
+					}else{
+						if (!ui.isPaused()){
+							model.resume();
+						}
+					}
+				}
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public void configure(String name,int  storagePrecision,int temporalPrecision,
+			int geographicalPrecision, String startDate, double orbit, double tilt, 
+			int gridSpacing, int timeStep, int length){
+		
+		//TODO we'll need to do validation on these inputs either here or in the UI
+		
+		model.updateConfig(name, temporalPrecision,
+				geographicalPrecision, startDate, orbit, tilt, gridSpacing, 
+				timeStep, length);
+		
+		model.run();
+	}
+	
+	@Override
+	public void pause(){
+		super.pause();
+		
+		model.pause();
+		//uiThread.pause();
+	}
+	
+	
+	@Override
+	public void resume(){
+		super.resume();
+		
+		model.resume();
+		//uiThread.resume();
+	}
+	
+	@Override
+	public void stop(){
+		super.stop();
+		
+		model.stop();
+		//uiThread.stop();
+	}
 }
