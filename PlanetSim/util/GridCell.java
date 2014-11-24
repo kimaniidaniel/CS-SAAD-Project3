@@ -23,7 +23,8 @@ public final class GridCell implements EarthCell<GridCell> {
 	// Cell properties: surface area, perimeter
 	private float lv, lb, lt, surfarea, pm;
 	
-	private static final int suntemp = 278;
+	//private static final int suntemp = 278;
+	private static final int suntemp = 50;
 
 	public GridCell(float temp, int x, int y, int latitude, int longitude, int gs) {
 
@@ -192,6 +193,9 @@ public final class GridCell implements EarthCell<GridCell> {
 	
 	public float calTsun(int sunPosition) {
 		
+		// so the Equator will be hotter
+		float beta = (float) (this.surfarea / avgArea);  // actual grid area / average cell area
+		
 		int   sunLongitude      = getSunLocationOnEarth(sunPosition);
 		//float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude  + 1.0 * this.gs / 2));
 		//P3 - Heated Planet : Find correct attenuation depending on the sun latitude
@@ -205,7 +209,7 @@ public final class GridCell implements EarthCell<GridCell> {
 		//return 278 * attenuation_lat * attenuation_longi;
 		//P3 - Heated Planet : Sun's distance from planet, inverse square law
 		double ratio = Math.pow((Simulator.a + Simulator.b)/2, 2) / Math.pow(distanceFromPlanet(Simulator.currentTimeInSimulation),2);
-		return (float) (suntemp * ratio * attenuation_lat * attenuation_longi); 
+		return (float) (suntemp * beta * ratio * attenuation_lat * attenuation_longi); 
 		//============ Math.pow(distanceFromPlanet(Earth.currentTimeInSimulation),2));
 	}
 	
@@ -233,9 +237,8 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 
 	public float calTcool() {
-		float beta = (float) (this.surfarea / avgArea);  // actual grid area / average cell area
 		//return -1 * beta * avgsuntemp;
-		return -1 * beta * this.currTemp / 288 * avgsuntemp;
+		return -1 * this.currTemp / 288 * avgsuntemp;
 	}
 	
 	public static void setAvgSuntemp(float avg){
