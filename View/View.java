@@ -64,7 +64,7 @@ public class View extends JFrame implements Runnable {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					View frame = new View();
+					View frame = new View(null);
 					frame.setTitle("Heated Planet Simulator");
 					frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 					frame.setResizable(false);
@@ -83,7 +83,7 @@ public class View extends JFrame implements Runnable {
 	@Override
 	public void run() {
 		try {
-			View frame = new View();
+			View frame = new View(null);
 			frame.setTitle("Heated Planet Simulator");
 			frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 			frame.setResizable(false);
