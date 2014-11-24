@@ -58,17 +58,19 @@ public class Tools {
         System.exit(0);
     }
 
-    public String getDate(long target, long step){
+    public long convertIterationToLong(long target, long step){
+        return  startDate.getTime() + (target* step * this.MILLSEC_PER_MINUTE);
+    }
+    public String getDate(long target){
         //pass in the start date, number of iterations and the steps
         //returns string value in dd-MMM-yyyy format
-        long targetDate = target* step * this.MILLSEC_PER_MINUTE;
-        return this.start_date_formatter.format(new Date(targetDate));
+       return this.start_date_formatter.format(new Date(target));
     }
-    public String getTime(long target, long step){
+    public String getTime(long target){
         //pass in the
         //returns string value in HH:mm:ss a
-        long targetDate = target* step * this.MILLSEC_PER_MINUTE;
-        return this.start_minute_formatter.format(new Date(targetDate));
+
+        return this.start_minute_formatter.format(new Date(target));
     }
 
     private Date getStartDate(){

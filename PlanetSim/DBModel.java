@@ -65,7 +65,7 @@ public class DBModel
     private long transactionCounter = 0;					//used to adjust performance counter for comparison
     private long MAX_NUMBER_TRANSACTION_COUNTER = 50000;	//used to adjust performance max size of the counter
     private long MAX_NUM_TRANS_TILL_COMMIT = 100000;	//used to adjust performance affects CPU
-    private int ITER_FOR_GARBAGE_COLLECTION = 10000;	//used to adjust performance affects CPU
+    private int ITER_FOR_GARBAGE_COLLECTION = 100000;	//used to adjust performance affects CPU
     // current simulation settings
     private int storagePrecision;
     private int temporalPrecision = 100;

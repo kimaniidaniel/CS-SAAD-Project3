@@ -24,21 +24,35 @@ public class Model extends ThreadModel{
 	public void run(){
 		Map map = null;
 		new Thread(sim).start();
-		while (this.isRunning()){							//add && (!sim.complete())
+		while (this.isRunning()&&!sim.isComplete()){							//add && (!sim.complete())
 			System.out.println("STARTING MODELTHREAD");
-			while (!this.isPaused()){
+			while (!this.isPaused()&&!sim.isComplete()){
 				try {
 					map = dequeue(simQueue);	//retrieves data from simulator
 					this.db.storeMap(map);		//presents to the DBModel for processing
 					enqueue(viewQueue,map);		//returns the values to the controller
 				} catch (InterruptedException e) {
 					e.printStackTrace();
-					//sim.stop();
+					sim.stop();
 					this.db.closeDBSession();
 					this.stop();
 					System.exit(0);
 				}
 			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		try {
+			this.db.manualCommit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			sim.stop();
+			this.db.closeDBSession();
+			this.stop();
+			System.exit(0);
 		}
 	}
 
@@ -59,6 +73,9 @@ public class Model extends ThreadModel{
 		if (this.isDebug()) { System.out.println("MODEL STOPPING"); }
 		//this.sim.stop();
 		this.stop();
+	}
+	public boolean isComplete(){
+		return sim.isComplete();
 	}
         @Override
 	public void pause(){
