@@ -8,7 +8,7 @@ import java.util.concurrent.BlockingQueue;
 public class Model extends ThreadModel{
 
 	BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(1024);		//queue to simulator
-	BlockingQueue<Object> viewQueue = new ArrayBlockingQueue<Object>(1024);		//queue to contoller
+	BlockingQueue<Object> viewQueue = new ArrayBlockingQueue<Object>(1024);		//queue to controller
 	DBModel db = null;
 
 	Simulator sim = new Simulator(simQueue);	//place holder for simulation object
@@ -43,9 +43,9 @@ public class Model extends ThreadModel{
 	}
 
 	//used by the controller to update the configuration
-	public void updateConfig(String Name,int  StoragePrecision,int TemporalPrecision,int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length){
+	public void updateConfig(String Name,int TemporalPrecision,int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length){
 		if (this.isDebug()) { System.out.println("UDPATING SIM CONFIGURATION"); }
-		this.db = new DBModel( Name, StoragePrecision, TemporalPrecision, GeographicalPrecision, StartDate, Orbit, Tilt, GridSpacing, TimeStep, Length);
+		this.db = new DBModel( Name, TemporalPrecision, GeographicalPrecision, StartDate, Orbit, Tilt, GridSpacing, TimeStep, Length);
 		this.sim.configure(Orbit, Tilt, GridSpacing, TimeStep, Length);
 	}
 	@SuppressWarnings({ "rawtypes" })
@@ -90,7 +90,7 @@ public class Model extends ThreadModel{
 		 int 			length = 100;
 	     String 		name = "";
 		Map map = null;
-		this.db = new  DBModel(name, storagePrecision, temporalPrecision, geographicaPrecision, startDate, orbit, tilt, gridSpacing, timeStep, length);
+		this.db = new  DBModel(name, temporalPrecision, geographicaPrecision, startDate, orbit, tilt, gridSpacing, timeStep, length);
 		Simulator sim = new Simulator(simQueue);
 		sim.configure(orbit, tilt, gridSpacing, timeStep, length);
 		FauxViewer view = new FauxViewer(viewQueue);

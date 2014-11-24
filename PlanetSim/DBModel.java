@@ -56,8 +56,8 @@ public class DBModel
             + "Temperature DOUBLE,"
             + "Longitude DOUBLE,"
             + "Step INTEGER,"
-            + "Reading_Date LONG,"
-            + "Reading_Time LONG,"
+            + "Reading_Date TEXT,"
+            + "Reading_Time TEXT,"
             + "TransActionTime TEXT,"
             + "FOREIGN KEY(CONFIG_ID) REFERENCES " + SIM_CONFIG_TBL + "(CONFIG_ID))";
 
@@ -94,14 +94,14 @@ public class DBModel
         }
     }
 
-    public DBModel(String Name, int StoragePrecision, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length)
+    public DBModel(String Name, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length)
     {
         System.out.println("OPENNING DBMODEL THROUGH SIMCONFIGURATION");
         try {
 
             this.conn = Connect(DATABASENAME);
             this.name = ("".equals(Name)) ? "Sim_" + this.getTimeStamp() : Name;
-            updateConfig(this.name, StoragePrecision, TemporalPrecision, GeographicalPrecision, StartDate, Orbit, Tilt, GridSpacing, TimeStep, Length);
+            updateConfig(this.name, TemporalPrecision, GeographicalPrecision, StartDate, Orbit, Tilt, GridSpacing, TimeStep, Length);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,14 +109,13 @@ public class DBModel
 
     //used for debugging
 
-    public DBModel(boolean debug, String Name, int StoragePrecision, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length)
+    public DBModel(boolean debug, String Name, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length)
     {
 
         this.debug = debug;
         try {
 
             this.name = ("".equals(Name)) ? "Sim" + this.getTimeStamp() : Name;
-            this.storagePrecision = StoragePrecision;
             this.temporalPrecision = TemporalPrecision;
             this.geographicalPrecision = GeographicalPrecision;
             this.startDate = StartDate;
@@ -144,11 +143,11 @@ public class DBModel
         }
     }
 
-    public void insertConfigData(String Name, int StoragePrecision, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length, String EntryTime) throws SQLException
+    public void insertConfigData(String Name, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length, String EntryTime) throws SQLException
     {
 
-        String statement = "INSERT INTO " + SIM_CONFIG_TBL + " (Name,StoragePrecision,TemporalPrecision,GeographicalPrecision,StartDate,Orbit,Tilt,GridSpacing,TimeStep,Length,EntryTime) "
-                + "VALUES ('" + Name + "'," + StoragePrecision + "," + TemporalPrecision + "," + GeographicalPrecision + ",'" + StartDate + "'," + Orbit + "," + Tilt + "," + GridSpacing + "," + TimeStep + "," + Length + "," + EntryTime + ");";
+        String statement = "INSERT INTO " + SIM_CONFIG_TBL + " (Name,TemporalPrecision,GeographicalPrecision,StartDate,Orbit,Tilt,GridSpacing,TimeStep,Length,EntryTime) "
+                + "VALUES ('" + Name + "'," + TemporalPrecision + "," + GeographicalPrecision + ",'" + StartDate + "'," + Orbit + "," + Tilt + "," + GridSpacing + "," + TimeStep + "," + Length + "," + EntryTime + ");";
         try (Statement stmt = this.conn.createStatement()) {
             stmt.executeUpdate(statement);
             this.conn.commit();
@@ -161,7 +160,7 @@ public class DBModel
     {
 
         String statement = "INSERT INTO " + PLANET_CELLS_TBL + " (CONFIG_ID,Latitude,Longitude,Temperature,Step,Reading_Date,Reading_Time,TransActionTime) "
-                + "VALUES (" + CONFIG_ID + "," + Latitude + "," + Latitude + "," + Temperature + "," + Step + ",'" + Reading_Date + "','" + Reading_Time + "','" + getTimeStamp() + "');";
+                + "VALUES (" + CONFIG_ID + "," + Latitude + "," + Longitude + "," + Temperature + "," + Step + ",'" + Reading_Date + "','" + Reading_Time + "','" + getTimeStamp() + "');";
         try (Statement stmt = this.conn.createStatement()) {
             stmt.executeUpdate(statement);
         }
@@ -235,7 +234,7 @@ public class DBModel
                     this.CONFIG_ID = getCountTable(SIM_CONFIG_TBL);
                     //sets previousSim to false so that the data will be stored
                     this.previousSimDetected = false;
-                    insertConfigData(name, storagePrecision, temporalPrecision, geographicalPrecision, startDate, orbit, tilt, gridSpacing, timeStep, length, "'" + getTimeStamp() + "'");
+                    insertConfigData(name, temporalPrecision, geographicalPrecision, startDate, orbit, tilt, gridSpacing, timeStep, length, "'" + getTimeStamp() + "'");
 
                 }
             }
@@ -266,11 +265,10 @@ public class DBModel
         return next_number;
     }
 
-    public void updateConfig(String Name, int StoragePrecision, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length)
+    public void updateConfig(String Name, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length)
     {
 
         this.name = (Name == "") ? "Sim" + this.getTimeStamp() : Name;
-        this.storagePrecision = StoragePrecision;
         this.temporalPrecision = TemporalPrecision;
         this.geographicalPrecision = GeographicalPrecision;
         this.startDate = StartDate;
