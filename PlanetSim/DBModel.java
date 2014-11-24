@@ -160,7 +160,7 @@ public class DBModel
     {
 
         String statement = "INSERT INTO " + PLANET_CELLS_TBL + " (CONFIG_ID,Latitude,Longitude,Temperature,Step,Reading_Date,Reading_Time,TransActionTime) "
-                + "VALUES (" + CONFIG_ID + "," + Latitude + "," + Longitude + "," + Temperature + "," + Step + ",'" + Reading_Date + "','" + Reading_Time + "','" + getTimeStamp() + "');";
+                + "VALUES (" + this.CONFIG_ID + "," + Latitude + "," + Longitude + "," + Temperature + "," + Step + ",'" + Reading_Date + "','" + Reading_Time + "','" + getTimeStamp() + "');";
         try (Statement stmt = this.conn.createStatement()) {
             stmt.executeUpdate(statement);
         }
@@ -332,7 +332,7 @@ public class DBModel
             if ((temporalPrecision - tempPrecCtr++) > 0 || temporalPrecision == 100) {					//will count down the number of allowable temporal saves
                 if ((geographicalPrecision - geoPrecCtr++) > 0 || (geographicalPrecision == 100)) {	//will count down the number of allowable geographical saves
                     try {
-                        insertGridData((double) map.get("Lat"), (double) map.get("Lon"), (double) map.get("Temp"), (int) map.get("Iter"), Integer.toString((int) map.get("Day")), Integer.toString((int) map.get("Min")), 1);
+                        insertGridData((double) map.get("Lat"), (double) map.get("Lon"), (double) map.get("Temp"), (int) map.get("Iter"), (String)map.get("Day"), (String)map.get("Min"), this.CONFIG_ID);
                     } catch (SQLException e) {
 
                         e.printStackTrace();
