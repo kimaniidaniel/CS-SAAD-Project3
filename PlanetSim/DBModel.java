@@ -56,8 +56,8 @@ public class DBModel
             + "Temperature DOUBLE,"
             + "Longitude DOUBLE,"
             + "Step INTEGER,"
-            + "Reading_Date TEXT,"
-            + "Reading_Time TEXT,"
+            + "Reading_Date NUMERIC,"
+            + "Reading_Time NUMERIC,"
             + "TransActionTime TEXT,"
             + "FOREIGN KEY(CONFIG_ID) REFERENCES " + SIM_CONFIG_TBL + "(CONFIG_ID))";
 
@@ -156,7 +156,7 @@ public class DBModel
 
     }
 
-    public void insertGridData(double Latitude, double Longitude, double Temperature, int Step, String Reading_Date, String Reading_Time, int CONFIG_ID) throws SQLException
+    public void insertGridData(double Latitude, double Longitude, double Temperature, int Step, long Reading_Date, long Reading_Time, int CONFIG_ID) throws SQLException
     {
 
         String statement = "INSERT INTO " + PLANET_CELLS_TBL + " (CONFIG_ID,Latitude,Longitude,Temperature,Step,Reading_Date,Reading_Time,TransActionTime) "
@@ -332,7 +332,7 @@ public class DBModel
             if ((temporalPrecision - tempPrecCtr++) > 0 || temporalPrecision == 100) {					//will count down the number of allowable temporal saves
                 if ((geographicalPrecision - geoPrecCtr++) > 0 || (geographicalPrecision == 100)) {	//will count down the number of allowable geographical saves
                     try {
-                        insertGridData((double) map.get("Lat"), (double) map.get("Lon"), (double) map.get("Temp"), (int) map.get("Iter"), (String)map.get("Day"), (String)map.get("Min"), this.CONFIG_ID);
+                        insertGridData((double) map.get("Lat"), (double) map.get("Lon"), (double) map.get("Temp"), (int) map.get("Iter"), (long)map.get("Day"), (long)map.get("Min"), this.CONFIG_ID);
                     } catch (SQLException e) {
 
                         e.printStackTrace();
