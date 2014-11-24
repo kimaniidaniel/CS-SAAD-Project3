@@ -15,15 +15,16 @@ public class testSimulation {
 
 	@Test
 	public void testEquinoxes() throws InterruptedException {
-		BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(5000);
+		BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(500000);
 		Simulator newearth = new Simulator(simQueue);
-		newearth.configure(1, 1, 4000);
+		newearth.configure(1, 1, 1);
 		// configuration for Earth
 		newearth.setE(0.0167); 
 		newearth.setTilt(23.4);
 		newearth.setTimeOfEquinox();
-		newearth.setcurrentStep(Simulator.tauAN);
 		new Thread(newearth).start();
+		while (newearth.isRunning()){};
+		newearth.setcurrentStep(Simulator.tauAN);
 		System.out.println("The current time for Equinoxes is:" + Simulator.tauAN);
 		
 		newearth.generate();
@@ -39,7 +40,7 @@ public class testSimulation {
 		BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(1024);
 		Simulator newearth = new Simulator(simQueue);
 		newearth.configure(60, 1, 10);
-		Simulator.printGrid();
+//		Simulator.printGrid();
 		new Thread(newearth).start();
 		while (newearth.isRunning()){};
 		System.out.println(Simulator.currentTimeInSimulation);
@@ -51,10 +52,26 @@ public class testSimulation {
 	@Test
 	public void testIsDone() throws InterruptedException {
 		// Test isDone function
-		Simulator newearth = new Simulator();
-		newearth.configure(1, 1, 10);
+		BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(1024);
+		Simulator newearth = new Simulator(simQueue);
+		newearth.configure(60, 1, 10);
 		new Thread(newearth).start();
-		
+		while (newearth.isRunning()){};
 		assertTrue("The current simulation should be done: ", newearth.isRunning() == false);
+	}
+	
+	@Test
+	public void testInitialSunLatitude() throws InterruptedException {
+		BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(5000);
+		Simulator newearth = new Simulator(simQueue);
+		newearth.configure(60, 1, 1);
+		newearth.generate();
+		GridCell prime = newearth.getGrid();
+		double latitude = prime.getSunLatitudeOnEarth();
+		double longitude = newearth.getSunPositionDeg();
+//		System.out.println("latitude:" + latitude);
+//		System.out.println("longitude:" + longitude);
+		assertTrue("The initial longitude should be 0: ", longitude == 0);
+		assertTrue("In the beginning of the year, the latitude of the Sun should be at southern hemisphere: ", latitude <= 0);
 	}
 }

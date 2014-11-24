@@ -1,6 +1,5 @@
 package PlanetSim;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -31,15 +30,15 @@ public final class Simulator extends ThreadModel {
 	private static final int[] increments = { 1,2,3,4,5,6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180 };
 
 	private int currentStep;
-	private static int width;
-	private static int height;
+	private int width;
+	private int height;
 	private int sunPositionCell;
 
-	private static GridCell prime = null;
+	private GridCell prime = null;
 	private int timeStep = DEFAULT_SPEED;
 	private int gs = DEFAULT_DEGREES;
 	private int simlen = DEFAULT_SIM_LENGTH;
-	
+
 	BlockingQueue<Object> queue = null;
 	Map<String, Number> map = new HashMap<String, Number>();
 
@@ -52,24 +51,25 @@ public final class Simulator extends ThreadModel {
 	//public static double tilt = 180;				//Obliquity(tilt) of the planet
 	public static int tauAN = 0;								//Time of the Equinox
 	public static int currentTimeInSimulation = 0;
-	
+	private static float sunPositionDeg = 0;
+
 	//planet around sun animation
-	public static final double animationGreatestDimention = 150; 
+	public static final double animationGreatestDimention = 150;
 	public static final double a = 1.496 * Math.pow(10, 11);//Length of the semi-major axis of earth IN METERS
 	public static final double factor = animationGreatestDimention/2*a;
 	public static final double b =  a * (Math.sqrt(1-(E * E)));
 
-	
+
 	public Simulator() {
 		//this.q = q;
-		
+
 	}
 
 	public Simulator(BlockingQueue<Object> q) {
 		this.queue = q;
-		
+
 	}
-	
+
 	public GridCell getGrid() {
 		return prime;
 	}
@@ -79,10 +79,10 @@ public final class Simulator extends ThreadModel {
 		tilt = Tilt;
 		configure(gs, timeStep, simlength);
 	}
-	
+
 	public void configure(int gs, int timeStep, int simlength) {
 		// sim length is in minute
-		
+
 		if (gs <= 0 || gs > MAX_DEGREES)
 			throw new IllegalArgumentException("Invalid grid spacing");
 
@@ -98,25 +98,25 @@ public final class Simulator extends ThreadModel {
 					this.gs = increments[i];
 				}
 			}
-			
+
 			System.out.println("gs: " + this.gs);
 		} else
 			this.gs = gs;
-		
+
 		if (simlength != -1) {
 			this.simlen = simlength;
 		}
-		
+
 		this.start();
-		
+
 		this.resume();
 	}
 
 	private void start() {
-		
+
 		// reset the current time in simulation
 		currentTimeInSimulation = 0;
-		
+
 		int x = 0, y = 0;
 
 		width = (2 * MAX_DEGREES / this.gs); // rows
@@ -125,7 +125,7 @@ public final class Simulator extends ThreadModel {
 		// do a reset
 		sunPositionCell = (width / 2) % width;
 		currentStep = 0;
-		
+
 		if (prime != null)			prime.setTemp(INITIAL_TEMP);
 		else
 			prime = new GridCell(INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
@@ -149,10 +149,10 @@ public final class Simulator extends ThreadModel {
 		for (y = 1; y < height - 1; y++) {
 
 			// curr should be changed, but actually have not.
-			this.createNextRow(bottom, curr, y); 
-			
+			this.createNextRow(bottom, curr, y);
+
 			curr = bottom.getTop();
-			
+
 			// left should be changed, but actually have not.
 			this.createRow(curr, next, bottom.getLeft(), left, y);
 			bottom = bottom.getTop();
@@ -163,12 +163,12 @@ public final class Simulator extends ThreadModel {
 
 		// North Pole
 		this.createRow(curr, next, bottom.getLeft(), left, y);
-		
+
 		// Calculate the average sun temperature
 		float totaltemp = 0;
 		float totalarea = 0;
 		curr = prime;
-				
+
 		for (x = 0; x < height; x++) {
 			GridCell rowgrid = curr.getLeft();
 			for (y = 0; y < width; y++) {
@@ -179,17 +179,19 @@ public final class Simulator extends ThreadModel {
 			curr = curr.getTop();
 		}
 		// Set initial average temperature
+//		System.out.println("Initial sun temp: " + totaltemp / (width * height));
+//		System.out.println("Initial total area: " + totalarea / (width * height));
 		GridCell.setAvgSuntemp(totaltemp / (width * height));
 		GridCell.setAverageArea(totalarea / (width * height));
 	}
 
 	public void run() {
-		System.out.println("still running");
+//		System.out.println("still running");
 		while (this.isRunning()) {
 			while (! this.isPaused() && ! this.isComplete()) {
 				try {
 					this.generate();
-					System.out.println("still running");
+//					System.out.println("still running");
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 					System.exit(0);
@@ -197,23 +199,23 @@ public final class Simulator extends ThreadModel {
 			}
 		}
 	}
-	
+
 	public boolean isComplete() {
 		if (currentTimeInSimulation < this.simlen){
 			return false;
 		} else {
 			this.stop();
 			return true;
-		}		
+		}
 	}
-	
+
 	public void generate() throws InterruptedException {
-		
+
 		// Don't attempt to generate if output queue is full...
 //		if(Buffer.getBuffer().getRemainingCapacity() == 0) {
 //			return;
 //		}
-		
+
 		//System.out.println("generating grid...");
 		Queue<GridCell> bfs = new LinkedList<GridCell>();
 		Queue<GridCell> calcd = new LinkedList<GridCell>();
@@ -222,30 +224,31 @@ public final class Simulator extends ThreadModel {
 
 		int t = timeStep * currentStep;
 		int rotationalAngle = 360 - ((t % MAX_SPEED) * 360 / MAX_SPEED);
-		sunPositionCell = ( (width * rotationalAngle) / 360 + (width / 2) ) % width;
+		sunPositionCell = ( (width * rotationalAngle) / 360 ) % width;
 
-		float sunPositionDeg = rotationalAngle;
+		sunPositionDeg = rotationalAngle;
 		if(sunPositionDeg>180) {
 			sunPositionDeg = sunPositionDeg - 360;
 		}
-		
+
 		IGrid grid = new Grid(sunPositionCell, sunPositionDeg, t, width, height);
 
 		float suntotal = 0;
 		float calcdTemp = 0;
-		
+
 		calcdTemp = prime.calculateTemp(sunPositionCell);
 		suntotal = suntotal + prime.calTsun(sunPositionCell);
 		grid.setTemperature(prime.getX(), prime.getY(), calcdTemp);
-		
+
 		prime.visited(true);
 		bfs.add(prime);
-		
+
 		//P3 - Heated Planet
 		//Earth.currentTimeInSimulation = t * 100;  // for speeding up the simulation
 		Simulator.currentTimeInSimulation = t;
-		System.out.println("Current time on Earth:" + Simulator.currentTimeInSimulation);
-		System.out.println("Distance from the Sun:" + prime.distanceFromPlanet(Simulator.currentTimeInSimulation));
+
+//		System.out.println("Current time on Earth:" + Simulator.currentTimeInSimulation);
+//		System.out.println("Distance from the Sun:" + prime.distanceFromPlanet(Simulator.currentTimeInSimulation));
 
 		while (!bfs.isEmpty()) {
 
@@ -254,17 +257,16 @@ public final class Simulator extends ThreadModel {
 
 			GridCell child = null;
 			Iterator<GridCell> itr = point.getChildren(false);
-			
+
 			while (itr.hasNext()) {
-				
+
 				child = itr.next();
 				child.visited(true);
 				calcdTemp = child.calculateTemp(sunPositionCell);
 				grid.setTemperature(child.getX(), child.getY(), calcdTemp);
 				bfs.add(child);
 				suntotal += child.calTsun(sunPositionCell);
-				
-//				System.out.println(child.getLongitude());
+
 				map.put("Lon", (double) child.getLongitude());
 				map.put("Lat", (double) child.getLatitude());
 				map.put("Temp", (double) child.getTemp());
@@ -273,6 +275,9 @@ public final class Simulator extends ThreadModel {
 				queue.put(map);
 			}
 		}
+
+//		System.out.println("Current average sun temperature:");
+//		System.out.println(suntotal /  (width * height));
 
 		GridCell.setAvgSuntemp(suntotal /  (width * height));
 		GridCell c = calcd.poll();
@@ -286,11 +291,11 @@ public final class Simulator extends ThreadModel {
 		grid.setSunLatitudeDeg((float) (-1 * prime.getSunLatitudeOnEarth()));
 		grid.setPlanetX(prime.getPlanetX(Simulator.currentTimeInSimulation));
 		grid.setPlanetY(prime.getPlanetY(Simulator.currentTimeInSimulation));
-		
+
 		//P3 Heated Planet: Set time of equinox
 		setTimeOfEquinox();
 	}
-	
+
 	private void createRow(GridCell curr, GridCell next, GridCell bottom,
 			GridCell left, int y) {
 
@@ -343,8 +348,8 @@ public final class Simulator extends ThreadModel {
 	private int getLongitude(int x) {
 		return x < (width / 2) ? -(x + 1) * this.gs : (360) - (x + 1) * this.gs;
 	}
-	
-	
+
+
 	public void setTimeOfEquinox() {
 		// actually two days for equinox, one is March 21, one is Sept 23
 		// What I got is actually April 22nd, the beginning day is Jan. 1st.
@@ -361,43 +366,50 @@ public final class Simulator extends ThreadModel {
 			}
 		}
 	}
-	
+
 	public void setcurrentStep(int step){
 		this.currentStep = step;
 	}
-	
+
 	public void setE(double newE) {
 		Simulator.E = newE;
 	}
-	
+
 	public void setTilt(double newTilt) {
 		Simulator.tilt = newTilt;
 	}
+
+	public int getWidth() {
+		return this.width;
+	}
 	
-	public static void printGrid(){
-		GridCell curr = prime;
-		//System.out.println(height);
-		//System.out.println(width);
-		float total = 0;
-		for (int x = 0; x < height; x++) {
-			GridCell rowgrid = curr.getLeft();
-			for (int y = 0; y < width; y++) {
-				//System.out.printf("%.2f,",rowgrid.getLongitude());
-				System.out.printf("%2d,",rowgrid.getLongitude());
+	public float getSunPositionDeg() {
+		return Simulator.sunPositionDeg;
+	}
+//	public static void printGrid(){
+//		GridCell curr = prime;
+//		//System.out.println(height);
+//		//System.out.println(width);
+//		float total = 0;
+//		for (int x = 0; x < height; x++) {
+//			GridCell rowgrid = curr.getLeft();
+//			for (int y = 0; y < width; y++) {
+//				//System.out.printf("%.2f,",rowgrid.getLongitude());
+////				System.out.printf("%2d,",rowgrid.getLongitude());
 //				System.out.printf("%.2f,",rowgrid.getTemp());
-				rowgrid = rowgrid.getLeft();
-				total += rowgrid.getTemp() - 288;
-			}
-			System.out.println();
-			curr = curr.getTop();
-		}
-		System.out.println(total);
-	}
-	
-	private void printMap(Map<String, Number> map){
-		System.out.println("Lon:" + map.get("Lon"));
-		System.out.println("Lat:" + map.get("Lat"));
-		System.out.println("Temp:" + map.get("Temp"));
-		System.out.println("Iter:" + map.get("Iter"));
-	}
+//				rowgrid = rowgrid.getLeft();
+//				total += rowgrid.getTemp() - 288;
+//			}
+//			System.out.println();
+//			curr = curr.getTop();
+//		}
+//		System.out.println(total);
+//	}
+//
+//	private void printMap(Map<String, Number> map){
+//		System.out.println("Lon:" + map.get("Lon"));
+//		System.out.println("Lat:" + map.get("Lat"));
+//		System.out.println("Temp:" + map.get("Temp"));
+//		System.out.println("Iter:" + map.get("Iter"));
+//	}
 }
