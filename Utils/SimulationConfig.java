@@ -5,13 +5,11 @@
  */
 package Utils;
 
-import Model.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-/* DECRECATED - DO NOT USE */
+
 /**
- *
  * @author kimanii
  */
 public class SimulationConfig implements Serializable {
@@ -30,6 +28,10 @@ public class SimulationConfig implements Serializable {
     public int Length;
     public Date EntryTime;
     public List<TemperatureReading> TemperatureReadings;
+    public TemperatureReading MinTemp;
+    public TemperatureReading MaxTemp;
+    public double MeanTempRegion;
+    public double MeanTempTime;
 
     public int getConfigId() {
         return ConfigId;

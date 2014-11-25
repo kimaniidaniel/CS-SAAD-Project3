@@ -394,7 +394,7 @@ public class DBModel
                 SimulationConfigs.add(simConfig);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DBModel.class.getName()).log(Level.SEVERE, null, ex);                                  /* Log errors */
+            Logger.getLogger(DBModel.class.getName()).log(Level.SEVERE, null, ex);                                    /* Log errors */
         } finally {
             try {
                 rs.close();
