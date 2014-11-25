@@ -66,7 +66,7 @@ public class View extends JFrame implements Runnable {
 	static final int DEFAULT_SIM_LENGTH = 12;
 	static final double DEFAULT_ECCENTRICITY = 0.0167;
 	static final double DEFAULT_TILT = 23.44;
-	static final String DEFAULT_DATE_TIME = "04-Jan-2012 12:00:00 AM";
+	static final String DEFAULT_DATE_TIME = "04-Jan-2014 12:00:00 AM";
 
 	// Swing variables
 	private static final long serialVersionUID = 1L;
@@ -90,7 +90,7 @@ public class View extends JFrame implements Runnable {
 	// Thread model
 	BlockingQueue<Object> queue = null;
 	Map map = null;
-	private boolean running = false;
+	private boolean running = true;
 	private boolean paused = false;
 	private boolean newConfig = false;
 	
@@ -107,11 +107,14 @@ public class View extends JFrame implements Runnable {
 		this.pack();
 		
 		while(this.isRunning()) {
-			try {
-				map = (Map) queue.take();
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			while(!btnStart.isEnabled()) {
+				try {
+					map = (Map) queue.take();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println(map);
 			}
 		}
 		
@@ -656,7 +659,6 @@ public class View extends JFrame implements Runnable {
 				progressBar.setValue(0);
 				toggleSimControls(true);
 				resume();
-				stop();
 			}
 		});
 		
@@ -689,11 +691,11 @@ public class View extends JFrame implements Runnable {
 	}
 	
 	public void stop(){
-		this.running = false;
+		// closes the thread/view
+		// this.running = false;
 	}
 	
 	public void start(){
-		this.running = true;
 		this.newConfig = true;
 	}
 	

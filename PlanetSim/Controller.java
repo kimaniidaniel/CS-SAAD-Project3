@@ -12,7 +12,7 @@ public class Controller extends ThreadModel{
 	private int precision;
 	private int geographicPrecision;
 	private int temporalPrecision;
-	static final String DEFAULT_DATE = "04-Jan-2012";
+	static final String DEFAULT_DATE = "04-Jan-2014";
 
 	// still confused about the queues but this can be changed
 	BlockingQueue<Object> viewQueue = new ArrayBlockingQueue<Object>(1024); // sending
@@ -40,7 +40,7 @@ public class Controller extends ThreadModel{
 		uiThread.start();
 		
 		while (this.isRunning()){
-			while (!ui.newConfigStarted() && !ui.isRunning()){
+			while (!ui.newConfigStarted() && ui.isRunning()){
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -48,7 +48,7 @@ public class Controller extends ThreadModel{
 					e.printStackTrace();
 				}
 			}
-			//if (!ui.isRunning()){ System.exit(0); }
+			if (!ui.isRunning()){ System.exit(0); }
 
 			ui.configReset();		//reset new configuration flag
 			this.model.updateConfig(ui.getSimName(),temporalPrecision,geographicPrecision,DEFAULT_DATE,
