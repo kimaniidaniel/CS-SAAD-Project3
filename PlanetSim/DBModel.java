@@ -12,7 +12,6 @@
 package PlanetSim;
 
 import Utils.QueryResult;
-import Utils.SimulationConfig;
 import Utils.TemperatureReading;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -384,7 +383,7 @@ public class DBModel
             TemperatureReading minTempTotal = new TemperatureReading();
             TemperatureReading maxTempTotal = new TemperatureReading();
             double meanTempTotal = 0;
-            
+
             while ( rs.next() ) {                                                                                   /* Iterate through the resulting recordset and build the SimulationConfig object */
                 Utils.SimulationConfig simConfig = new Utils.SimulationConfig();
                 simConfig.setConfigId(rs.getInt("CONFIG_ID"));
@@ -401,13 +400,13 @@ public class DBModel
                 simConfig.TemperatureReadings   = QueryGetSimCells(configId,minTemp,maxTemp, meanTemp);                                         /* Get all cells for this config and add it to the collection */
                 simConfig.MinTemp               = minTemp;
                 simConfig.MaxTemp               = maxTemp;
-                minTempTotal                    = (minTempTotal.Temperatue < minTemp.Temperatue)?minTempTotal:minTemp;
-                maxTempTotal                    = (maxTempTotal.Temperatue > maxTemp.Temperatue)?maxTempTotal:minTemp;
+                minTempTotal                    = (minTempTotal.Temperatue < minTemp.Temperatue)?minTempTotal:minTemp;      /* get minimum temperature over times */
+                maxTempTotal                    = (maxTempTotal.Temperatue > maxTemp.Temperatue)?maxTempTotal:maxTemp;      /* get maximum temperature over times */
                 simConfig.MeanTempOverRegion    = meanTemp;
-                meanTempTotal                   += meanTemp;
+                meanTempTotal                   += meanTemp;                                                                /* aggregate mean temp over times */
                 SimulationConfigs.add(simConfig);
             }
-            meanTempTotal /= SimulationConfigs.size();
+            meanTempTotal                       /= (meanTempTotal > 0)?SimulationConfigs.size():1;                          /* sum(meanTemps) / Count(time steps) */
             result.MeanTemperatureOverTimes     = meanTempTotal;
             result.MaxTemperatureReading        = maxTempTotal;
             result.MinTemperatureReading        = minTempTotal;
@@ -420,9 +419,9 @@ public class DBModel
                 Logger.getLogger(DBModel.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         result.Simulation = SimulationConfigs;
-        
+
         return result;
     }
 
@@ -437,7 +436,8 @@ public class DBModel
         try {
             Statement stmt = this.conn.createStatement();
             rs = stmt.executeQuery(sqlCommand);
-            meanTemp = 0d;double c = 0;
+            meanTemp = 0d;
+            double c = 0;
             while ( rs.next() ) {                                                                                   /* fill TemperatureReading object */
                 Utils.TemperatureReading reading = new Utils.TemperatureReading();
                 reading.ConfigId        = rs.getInt("CONFIG_ID");
@@ -449,7 +449,7 @@ public class DBModel
                 reading.ReadingTime     = rs.getLong("Reading_Time");
                 reading.TransActionTime = rs.getNString("TransActionTime");
                 TemperaturReadings.add(reading);
-                meanTemp += reading.Temperatue; c++;
+                meanTemp                += reading.Temperatue; c++;
                 minTemp                 = (reading.Temperatue < minTemp.Temperatue)? reading : minTemp;
                 maxTemp                 = (reading.Temperatue > maxTemp.Temperatue)? reading : maxTemp;
             }
