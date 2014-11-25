@@ -1,5 +1,6 @@
 package PlanetSim;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -385,6 +386,16 @@ public final class Simulator extends ThreadModel {
 	
 	public float getSunPositionDeg() {
 		return Simulator.sunPositionDeg;
+	}
+	
+	public int month2Miniute(int month, int timestep) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(Tools.getStartDate());
+		cal.add(Calendar.MONTH, (int) spnSimLength.getValue());
+		long startDate = Tools.getStartDate().getTime();
+		long endDate = cal.getTimeInMillis();
+
+		return (endDate - startDate) / getStep();
 	}
 //	public static void printGrid(){
 //		GridCell curr = prime;
