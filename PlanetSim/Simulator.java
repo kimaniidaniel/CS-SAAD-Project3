@@ -399,25 +399,25 @@ public final class Simulator extends ThreadModel {
 		return (int) ((endDate - startDate) / (60000 * timestep));
 	}
 	
-	public void printGrid(){
-		GridCell curr = this.prime;
-		//System.out.println(height);
-		//System.out.println(width);
-		float total = 0;
-		for (int x = 0; x < height; x++) {
-			GridCell rowgrid = curr.getLeft();
-			for (int y = 0; y < width; y++) {
-				//System.out.printf("%.2f,",rowgrid.getLongitude());
-//				System.out.printf("%2d,",rowgrid.getLongitude());
-				System.out.printf("%.2f,",rowgrid.getTemp());
-				rowgrid = rowgrid.getLeft();
-				total += rowgrid.getTemp() - 288;
-			}
-			System.out.println();
-			curr = curr.getTop();
-		}
-		System.out.println(total);
-	}
+//	public void printGrid(){
+//		GridCell curr = this.prime;
+//		//System.out.println(height);
+//		//System.out.println(width);
+//		float total = 0;
+//		for (int x = 0; x < height; x++) {
+//			GridCell rowgrid = curr.getLeft();
+//			for (int y = 0; y < width; y++) {
+//				//System.out.printf("%.2f,",rowgrid.getLongitude());
+////				System.out.printf("%2d,",rowgrid.getLongitude());
+//				System.out.printf("%.2f,",rowgrid.getTemp());
+//				rowgrid = rowgrid.getLeft();
+//				total += rowgrid.getTemp() - 288;
+//			}
+//			System.out.println();
+//			curr = curr.getTop();
+//		}
+//		System.out.println(total);
+//	}
 //
 //	private void printMap(Map<String, Number> map){
 //		System.out.println("Lon:" + map.get("Lon"));
