@@ -35,10 +35,10 @@ public class testSimulation {
 	@Test
 	public void testBasicSimulation() throws InterruptedException {
 		// Test simulation setting up
-		BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(1024);
+		BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(5000);
 		Simulator newearth = new Simulator(simQueue);
 		newearth.configure(60, 1, 10);
-//		Simulator.printGrid();
+		newearth.printGrid();
 		new Thread(newearth).start();
 		while (newearth.isRunning()){};
 		System.out.println(Simulator.currentTimeInSimulation);
@@ -52,7 +52,7 @@ public class testSimulation {
 		// Test isDone function
 		BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(1024);
 		Simulator newearth = new Simulator(simQueue);
-		newearth.configure(60, 1, 10);
+		newearth.configure(60, 1, 1);
 		new Thread(newearth).start();
 		while (newearth.isRunning()){};
 		assertTrue("The current simulation should be done: ", newearth.isRunning() == false);
@@ -71,5 +71,14 @@ public class testSimulation {
 //		System.out.println("longitude:" + longitude);
 		assertTrue("The initial longitude should be 0: ", longitude == 0);
 		assertTrue("In the beginning of the year, the latitude of the Sun should be at southern hemisphere: ", latitude <= 0);
+	}
+	
+	@Test
+	public void testMonth2Minutes() throws InterruptedException {
+		BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(5000);
+		Simulator newearth = new Simulator(simQueue);
+		newearth.configure(60, 1, 1);
+		int minutes = newearth.month2Miniute(2, 1);
+		System.out.println("miniutes in two month:" + minutes);
 	}
 }

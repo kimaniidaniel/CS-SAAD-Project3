@@ -12,6 +12,7 @@ import PlanetSim.util.GridCell;
 //import common.Buffer;
 import PlanetSim.util.Grid;
 import PlanetSim.util.IGrid;
+import PlanetSim.util.Tools;
 
 public final class Simulator extends ThreadModel {
 
@@ -105,7 +106,7 @@ public final class Simulator extends ThreadModel {
 			this.gs = gs;
 
 		if (simlength != -1) {
-			this.simlen = simlength;
+			this.simlen = this.month2Miniute(simlength, timeStep);
 		}
 
 		this.start();
@@ -192,7 +193,7 @@ public final class Simulator extends ThreadModel {
 			while (! this.isPaused() && ! this.isComplete()) {
 				try {
 					this.generate();
-//					System.out.println("still running");
+					System.out.println("still running");
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 					System.exit(0);
@@ -391,31 +392,32 @@ public final class Simulator extends ThreadModel {
 	public int month2Miniute(int month, int timestep) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(Tools.getStartDate());
-		cal.add(Calendar.MONTH, (int) spnSimLength.getValue());
+		cal.add(Calendar.MONTH, month);
 		long startDate = Tools.getStartDate().getTime();
 		long endDate = cal.getTimeInMillis();
 
-		return (endDate - startDate) / getStep();
+		return (int) ((endDate - startDate) / (60000 * timestep));
 	}
-//	public static void printGrid(){
-//		GridCell curr = prime;
-//		//System.out.println(height);
-//		//System.out.println(width);
-//		float total = 0;
-//		for (int x = 0; x < height; x++) {
-//			GridCell rowgrid = curr.getLeft();
-//			for (int y = 0; y < width; y++) {
-//				//System.out.printf("%.2f,",rowgrid.getLongitude());
-////				System.out.printf("%2d,",rowgrid.getLongitude());
-//				System.out.printf("%.2f,",rowgrid.getTemp());
-//				rowgrid = rowgrid.getLeft();
-//				total += rowgrid.getTemp() - 288;
-//			}
-//			System.out.println();
-//			curr = curr.getTop();
-//		}
-//		System.out.println(total);
-//	}
+	
+	public void printGrid(){
+		GridCell curr = this.prime;
+		//System.out.println(height);
+		//System.out.println(width);
+		float total = 0;
+		for (int x = 0; x < height; x++) {
+			GridCell rowgrid = curr.getLeft();
+			for (int y = 0; y < width; y++) {
+				//System.out.printf("%.2f,",rowgrid.getLongitude());
+//				System.out.printf("%2d,",rowgrid.getLongitude());
+				System.out.printf("%.2f,",rowgrid.getTemp());
+				rowgrid = rowgrid.getLeft();
+				total += rowgrid.getTemp() - 288;
+			}
+			System.out.println();
+			curr = curr.getTop();
+		}
+		System.out.println(total);
+	}
 //
 //	private void printMap(Map<String, Number> map){
 //		System.out.println("Lon:" + map.get("Lon"));
