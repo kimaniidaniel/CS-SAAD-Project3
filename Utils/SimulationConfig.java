@@ -30,8 +30,7 @@ public class SimulationConfig implements Serializable {
     public List<TemperatureReading> TemperatureReadings;
     public TemperatureReading MinTemp;
     public TemperatureReading MaxTemp;
-    public double MeanTempRegion;
-    public double MeanTempTime;
+    public double MeanTempOverRegion;
 
     public int getConfigId() {
         return ConfigId;

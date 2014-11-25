@@ -11,6 +11,7 @@
 //-t #: The temporal precision of the temperature data to be stored, as an integer percentage of the number of time periods saved versus the number computed. The default is 100%; that is, all computed values should be stored.
 package PlanetSim;
 
+import Utils.QueryResult;
 import Utils.SimulationConfig;
 import Utils.TemperatureReading;
 import java.sql.Connection;
@@ -356,11 +357,12 @@ public class DBModel
     /**
      * Query the database for simulated stored data
      */
-    public List<SimulationConfig> Query(String Name, int StoragePrecision, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing)
+    public QueryResult Query(String Name, int StoragePrecision, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing)
     {
         String sqlCommand = String.format("SELECT * FROM '%s' WHERE 1=1 ", SIM_CONFIG_TBL);
         ResultSet rs = null;
         int configId = 0;
+        Utils.QueryResult result = new Utils.QueryResult();
         List<Utils.SimulationConfig> SimulationConfigs = new ArrayList<>();
         List<Utils.TemperatureReading> TemperaturReadings = new ArrayList<>();
                                                                                                                     /* Build query SQL command */
@@ -376,6 +378,13 @@ public class DBModel
         try {
             Statement stmt = this.conn.createStatement();                                                           /* Execute SQL command */
             rs = stmt.executeQuery(sqlCommand);
+            TemperatureReading minTemp = new TemperatureReading();
+            TemperatureReading maxTemp = new TemperatureReading();
+            double meanTemp = 0;
+            TemperatureReading minTempTotal = new TemperatureReading();
+            TemperatureReading maxTempTotal = new TemperatureReading();
+            double meanTempTotal = 0;
+            
             while ( rs.next() ) {                                                                                   /* Iterate through the resulting recordset and build the SimulationConfig object */
                 Utils.SimulationConfig simConfig = new Utils.SimulationConfig();
                 simConfig.setConfigId(rs.getInt("CONFIG_ID"));
@@ -389,10 +398,19 @@ public class DBModel
                 simConfig.GridSpacing           = rs.getInt("GridSpacing");
                 simConfig.TimeStep              = rs.getInt("TimeStep");
                 simConfig.Length                = rs.getInt("Length");
-                simConfig.TemperatureReadings   = QueryGetSimCells(configId);                                         /* Get all cells for this config and add it to the collection */
-
+                simConfig.TemperatureReadings   = QueryGetSimCells(configId,minTemp,maxTemp, meanTemp);                                         /* Get all cells for this config and add it to the collection */
+                simConfig.MinTemp               = minTemp;
+                simConfig.MaxTemp               = maxTemp;
+                minTempTotal                    = (minTempTotal.Temperatue < minTemp.Temperatue)?minTempTotal:minTemp;
+                maxTempTotal                    = (maxTempTotal.Temperatue > maxTemp.Temperatue)?maxTempTotal:minTemp;
+                simConfig.MeanTempOverRegion    = meanTemp;
+                meanTempTotal                   += meanTemp;
                 SimulationConfigs.add(simConfig);
             }
+            meanTempTotal /= SimulationConfigs.size();
+            result.MeanTemperatureOverTimes     = meanTempTotal;
+            result.MaxTemperatureReading        = maxTempTotal;
+            result.MinTemperatureReading        = minTempTotal;
         } catch (SQLException ex) {
             Logger.getLogger(DBModel.class.getName()).log(Level.SEVERE, null, ex);                                    /* Log errors */
         } finally {
@@ -402,14 +420,16 @@ public class DBModel
                 Logger.getLogger(DBModel.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
-        return SimulationConfigs;
+        
+        result.Simulation = SimulationConfigs;
+        
+        return result;
     }
 
     /**
      * Queries Cell information based on configId and returns a list of TemperatureReading
      */
-    private List<TemperatureReading> QueryGetSimCells(int configId ) {
+    private List<TemperatureReading> QueryGetSimCells(int configId, TemperatureReading minTemp, TemperatureReading maxTemp, double meanTemp ) {
         String sqlCommand;
         ResultSet rs = null;
         List<TemperatureReading> TemperaturReadings = new ArrayList<>();
@@ -417,6 +437,7 @@ public class DBModel
         try {
             Statement stmt = this.conn.createStatement();
             rs = stmt.executeQuery(sqlCommand);
+            meanTemp = 0d;double c = 0;
             while ( rs.next() ) {                                                                                   /* fill TemperatureReading object */
                 Utils.TemperatureReading reading = new Utils.TemperatureReading();
                 reading.ConfigId        = rs.getInt("CONFIG_ID");
@@ -428,7 +449,11 @@ public class DBModel
                 reading.ReadingTime     = rs.getLong("Reading_Time");
                 reading.TransActionTime = rs.getNString("TransActionTime");
                 TemperaturReadings.add(reading);
+                meanTemp += reading.Temperatue; c++;
+                minTemp                 = (reading.Temperatue < minTemp.Temperatue)? reading : minTemp;
+                maxTemp                 = (reading.Temperatue > maxTemp.Temperatue)? reading : maxTemp;
             }
+            meanTemp = meanTemp / c;
         } catch (SQLException ex) {
             Logger.getLogger(DBModel.class.getName()).log(Level.SEVERE, null, ex);                                  /* log any error */
         } finally {
