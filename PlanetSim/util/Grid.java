@@ -65,7 +65,7 @@ public class Grid implements IGrid {
 	}
 	
 	public void setSunLatitudeDeg(float lat) {
-		this.sunLatitudeDeg = (float) lat;
+		this.sunLatitudeDeg = lat;
 	}
 	
 	@Override

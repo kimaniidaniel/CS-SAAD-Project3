@@ -38,9 +38,11 @@ public class Controller extends ThreadModel{
 	@Override
 	public void run(){
 		uiThread.start();
-		
+		System.out.println("STARTING CONTOLLER");
 		while (this.isRunning()){
+			System.out.println("Controlller Loop : Main");
 			while (!ui.newConfigStarted() && ui.isRunning()){
+				System.out.println("Controller Waiting for start");
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -48,8 +50,8 @@ public class Controller extends ThreadModel{
 					e.printStackTrace();
 				}
 			}
-			if (!ui.isRunning()){ System.exit(0); }
 
+			if (!ui.isRunning()){ System.exit(0); }
 			ui.configReset();		//reset new configuration flag
 			this.model.updateConfig(ui.getSimName(),temporalPrecision,geographicPrecision,DEFAULT_DATE,
 					ui.getOrbit(),ui.getTilt(),ui.getGSpacing(),ui.getStep(),ui.getDuration());
@@ -57,12 +59,15 @@ public class Controller extends ThreadModel{
 			
 			while(!model.isComplete() && model.isRunning()){
 				if (ui.isPaused()){
+					System.out.println("Controller:PAUSE");
 					model.pause();
 				}else{
 					if (!ui.isRunning()){
+						System.out.println("Controller:STOP");
 						model.stop();
 					}else{
 						if (!ui.isPaused()){
+							System.out.println("Controller:RESUME");
 							model.resume();
 						}
 					}
@@ -73,6 +78,7 @@ public class Controller extends ThreadModel{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+
 			}
 		}
 	}

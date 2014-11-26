@@ -1,5 +1,6 @@
 package PlanetSim;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -11,6 +12,7 @@ import PlanetSim.util.GridCell;
 //import common.Buffer;
 import PlanetSim.util.Grid;
 import PlanetSim.util.IGrid;
+import PlanetSim.util.Tools;
 
 public final class Simulator extends ThreadModel {
 
@@ -104,7 +106,7 @@ public final class Simulator extends ThreadModel {
 			this.gs = gs;
 
 		if (simlength != -1) {
-			this.simlen = simlength;
+			this.simlen = this.month2Miniute(simlength, timeStep);
 		}
 
 		this.start();
@@ -188,10 +190,10 @@ public final class Simulator extends ThreadModel {
 	public void run() {
 //		System.out.println("still running");
 		while (this.isRunning()) {
-			while (! this.isPaused() && ! this.isComplete()) {
+			while (!this.isPaused() && !this.isComplete()) {
 				try {
 					this.generate();
-//					System.out.println("still running");
+					System.out.println("still running");
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 					System.exit(0);
@@ -201,11 +203,12 @@ public final class Simulator extends ThreadModel {
 	}
 
 	public boolean isComplete() {
-		if (currentTimeInSimulation < this.simlen){
-			return false;
-		} else {
+		if (currentTimeInSimulation >= this.simlen){
+			System.out.println("SIM:COMPLETE:"+(currentTimeInSimulation < this.simlen )+":CURRENTTIME:"+currentTimeInSimulation+":SIMLENGTH:"+this.simlen);
 			this.stop();
 			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -297,7 +300,7 @@ public final class Simulator extends ThreadModel {
 	}
 
 	private void createRow(GridCell curr, GridCell next, GridCell bottom,
-			GridCell left, int y) {
+						   GridCell left, int y) {
 
 		for (int x = 1; x < width; x++) {
 
@@ -314,7 +317,7 @@ public final class Simulator extends ThreadModel {
 	}
 
 	private void createRowCell(GridCell curr, GridCell next, GridCell bottom,
-			int x, int y) {
+							   int x, int y) {
 
 		if (curr.getLeft() != null) {
 			GridCell l = curr.getLeft();
@@ -382,12 +385,23 @@ public final class Simulator extends ThreadModel {
 	public int getWidth() {
 		return this.width;
 	}
-	
+
 	public float getSunPositionDeg() {
 		return Simulator.sunPositionDeg;
 	}
-//	public static void printGrid(){
-//		GridCell curr = prime;
+
+	public int month2Miniute(int month, int timestep) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(Tools.getStartDate());
+		cal.add(Calendar.MONTH, month);
+		long startDate = Tools.getStartDate().getTime();
+		long endDate = cal.getTimeInMillis();
+
+		return (int) ((endDate - startDate) / (60000 * timestep));
+	}
+
+//	public void printGrid(){
+//		GridCell curr = this.prime;
 //		//System.out.println(height);
 //		//System.out.println(width);
 //		float total = 0;

@@ -1,6 +1,7 @@
 package PlanetSim;
 
 import PlanetSim.util.Tools;
+import PlanetSim.Controller;
 
 /**
 The Heated Planet simulation program should be invoked as follows:

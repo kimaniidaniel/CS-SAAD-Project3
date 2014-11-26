@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.concurrent.TimeUnit;
 
 import PlanetSim.util.Tools;
 
@@ -109,7 +110,7 @@ public class View extends JFrame implements Runnable {
 		while(this.isRunning()) {
 			while(!btnStart.isEnabled()) {
 				try {
-					map = (Map) queue.take();
+					map = (Map) queue.poll(2, TimeUnit.MILLISECONDS);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -700,6 +701,7 @@ public class View extends JFrame implements Runnable {
 	}
 	
 	public void configReset(){
+		System.out.println("View:System start Reset");
 		this.newConfig = false;
 	}
 	

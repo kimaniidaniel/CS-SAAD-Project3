@@ -28,8 +28,11 @@ public class Model extends ThreadModel{
 			System.out.println("STARTING MODELTHREAD");
 			while (!this.isPaused()&&!sim.isComplete()){
 				try {
+					System.out.println("MODEL:DEQUEUE");
 					map = dequeue(simQueue);	//retrieves data from simulator
+					System.out.println(map);
 					this.db.storeMap(map);		//presents to the DBModel for processing
+					System.out.println("MODEL:ENQUEUE");
 					enqueue(viewQueue,map);		//returns the values to the controller
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -38,12 +41,10 @@ public class Model extends ThreadModel{
 					this.stop();
 					System.exit(0);
 				}
+				System.out.println("MODEL:LOOP:ISPAUSED:"+this.isPaused());
+				System.out.println("MODEL:LOOP:ISCOMPLETE:"+sim.isComplete());
 			}
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			System.out.println("MODEL:ENDING MODELTHREAD");
 		}
 		try {
 			this.db.manualCommit();
@@ -58,7 +59,7 @@ public class Model extends ThreadModel{
 
 	//used by the controller to update the configuration
 	public void updateConfig(String Name,int TemporalPrecision,int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length){
-		if (this.isDebug()) { System.out.println("UDPATING SIM CONFIGURATION"); }
+		if (this.isDebug()) { System.out.println("MODEL:UDPATING SIM CONFIGURATION"); }
 		this.db = new DBModel( Name, TemporalPrecision, GeographicalPrecision, StartDate, Orbit, Tilt, GridSpacing, TimeStep, Length);
 		this.sim.configure(Orbit, Tilt, GridSpacing, TimeStep, Length);
 	}
