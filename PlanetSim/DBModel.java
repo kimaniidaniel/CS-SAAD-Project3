@@ -64,7 +64,7 @@ public class DBModel
     private boolean debug = false;							//used for debugging
     private long transactionCounter = 0;					//used to adjust performance counter for comparison
     private long MAX_NUMBER_TRANSACTION_COUNTER = 50000;	//used to adjust performance max size of the counter
-    private long MAX_NUM_TRANS_TILL_COMMIT = 100000;	//used to adjust performance affects CPU
+    private long MAX_NUM_TRANS_TILL_COMMIT = 10000;	//used to adjust performance affects CPU
     private int ITER_FOR_GARBAGE_COLLECTION = 100000;	//used to adjust performance affects CPU
     // current simulation settings
     private int storagePrecision;
@@ -148,9 +148,12 @@ public class DBModel
 
         String statement = "INSERT INTO " + SIM_CONFIG_TBL + " (Name,TemporalPrecision,GeographicalPrecision,StartDate,Orbit,Tilt,GridSpacing,TimeStep,Length,EntryTime) "
                 + "VALUES ('" + Name + "'," + TemporalPrecision + "," + GeographicalPrecision + ",'" + StartDate + "'," + Orbit + "," + Tilt + "," + GridSpacing + "," + TimeStep + "," + Length + "," + EntryTime + ");";
-        try (Statement stmt = this.conn.createStatement()) {
+        try {
+        	Statement stmt = this.conn.createStatement();
             stmt.executeUpdate(statement);
             this.conn.commit();
+        } catch (Exception e) {
+        	throw e;
         }
         cleanUp();
 
@@ -161,8 +164,11 @@ public class DBModel
 
         String statement = "INSERT INTO " + PLANET_CELLS_TBL + " (CONFIG_ID,Latitude,Longitude,Temperature,Step,Reading_Date,Reading_Time,TransActionTime) "
                 + "VALUES (" + this.CONFIG_ID + "," + Latitude + "," + Longitude + "," + Temperature + "," + Step + ",'" + Reading_Date + "','" + Reading_Time + "','" + getTimeStamp() + "');";
-        try (Statement stmt = this.conn.createStatement()) {
+        try {
+        	Statement stmt = this.conn.createStatement();
             stmt.executeUpdate(statement);
+        } catch (Exception e) {
+        	throw e;
         }
         cleanUp();
 
@@ -180,7 +186,8 @@ public class DBModel
             Class.forName("org.sqlite.JDBC");
             c = DriverManager.getConnection("jdbc:sqlite:" + databaseName);		// creates db if not present or open if it is
             c.setAutoCommit(false);											// turns off AutoCommit for performance issues
-            try (Statement stmt = c.createStatement()) {
+            try {
+            	Statement stmt = c.createStatement();
                 if (this.isDebug()) {
                     System.out.println("Creating:" + SIM_CONFIG_TBL);
                 }
@@ -190,6 +197,9 @@ public class DBModel
                 }
                 stmt.execute(CREATE_PLANET_CELLS_TBL);							// creates table PLANET_CELLS_TBL if not present
                 c.commit();
+            }
+            catch (Exception e) {
+            	throw e;
             }
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -222,7 +232,9 @@ public class DBModel
                 + " AND TimeStep = " + this.timeStep
                 + " AND Length = " + this.length + ";";
         try {
-            try (Statement stmt = this.conn.createStatement(); ResultSet rs = stmt.executeQuery(statement)) {
+            try {
+            	Statement stmt = this.conn.createStatement(); 
+            	ResultSet rs = stmt.executeQuery(statement);
                 //sets CONFIG_ID to the stored CONFIG_ID if found, or the next number in the index
                 if (rs.next()) {
                     this.CONFIG_ID = rs.getInt("CONFIG_ID");
@@ -237,6 +249,8 @@ public class DBModel
                     insertConfigData(name, temporalPrecision, geographicalPrecision, startDate, orbit, tilt, gridSpacing, timeStep, length, "'" + getTimeStamp() + "'");
 
                 }
+            } catch (Exception e) {
+            	throw e;
             }
             this.conn.commit();
         } catch (SQLException e) {

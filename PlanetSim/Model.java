@@ -86,7 +86,7 @@ public class Model extends ThreadModel{
 			e.printStackTrace();
 			this.stop();
 		}
-		this.pause();
+		// this.pause();
 	}
 	public void unpause(){
 		if (this.isDebug()) { System.out.println("MODEL RESUMING"); }
@@ -110,7 +110,7 @@ public class Model extends ThreadModel{
 		this.db = new  DBModel(name, temporalPrecision, geographicaPrecision, startDate, orbit, tilt, gridSpacing, timeStep, length);
 		Simulator sim = new Simulator(simQueue);
 		sim.configure(orbit, tilt, gridSpacing, timeStep, length);
-		FauxViewer view = new FauxViewer(viewQueue);
+		View view = new View(viewQueue);
 		new Thread(sim).start();
 		new Thread(view).start();
 		while (sim.isRunning()){

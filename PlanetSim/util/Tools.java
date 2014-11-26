@@ -14,9 +14,9 @@ import java.util.Map;
 import java.util.ArrayList;
 
 public class Tools {
-    private String start_date_string = "04-Jan-2012";
-    private SimpleDateFormat start_date_formatter = new SimpleDateFormat("dd-MMM-yyyy");
-    private SimpleDateFormat start_minute_formatter = new SimpleDateFormat("HH:mm:ss a");
+    private static String start_date_string = "04-Jan-2014";
+    private static SimpleDateFormat start_date_formatter = new SimpleDateFormat("dd-MMM-yyyy");
+    private static SimpleDateFormat start_minute_formatter = new SimpleDateFormat("HH:mm:ss a");
     private Date startDate = getStartDate();
     private long MILLSEC_PER_MINUTE = 60 * 1000;
 
@@ -73,7 +73,7 @@ public class Tools {
         return this.start_minute_formatter.format(new Date(target));
     }
 
-    private Date getStartDate(){
+    public static Date getStartDate(){
         try {
             return start_date_formatter.parse(start_date_string);
         } catch (ParseException e) {
