@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import View.View;
+
 public class Model extends ThreadModel{
 
 	BlockingQueue<Object> simQueue = new ArrayBlockingQueue<Object>(1024);		//queue to simulator

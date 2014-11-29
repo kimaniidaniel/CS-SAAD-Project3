@@ -276,6 +276,12 @@ public final class Simulator extends ThreadModel {
 				map.put("Iter", Simulator.currentTimeInSimulation);
 				// Adding data to array block queue
 				queue.put(map);
+				
+				System.out.println("longitude:" + child.getLongitude());
+				System.out.println("latitude:" + child.getLatitude());
+				System.out.println("temp:" + child.getTemp());
+				System.out.println("Iter:" + Simulator.currentTimeInSimulation);
+
 			}
 		}
 

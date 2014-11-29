@@ -5,7 +5,6 @@ package PlanetSim.util;
  */
 import PlanetSim.Model;
 
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -58,6 +57,7 @@ public class Tools {
     public long convertIterationToLong(long target, long step){
         return  startDate.getTime() + (target* step * this.MILLSEC_PER_MINUTE);
     }
+    
     public String getDate(long target){
         //pass in the start date, number of iterations and the steps
         //returns string value in dd-MMM-yyyy format
@@ -115,4 +115,5 @@ public class Tools {
 //    int prevDayOfWeek = date.get(Calendar.DAY_OF_WEEK);
 
 //    date.add(Calendar.MONTH, 1);
+
 }
