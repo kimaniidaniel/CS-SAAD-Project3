@@ -1,58 +1,41 @@
-package PlanetSim;
+package View;
 
 import java.awt.BorderLayout;
-
+import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
 import java.awt.Component;
-
 import javax.swing.JTabbedPane;
-
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
-
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.JSpinner;
-
-import java.awt.EventQueue;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.border.LineBorder;
-
 import java.awt.Color;
-
 import javax.swing.border.TitledBorder;
 import javax.swing.SwingConstants;
-
 import java.awt.Dimension;
-
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-
 import java.awt.Font;
-
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerDateModel;
-
 import java.util.Date;
 import java.util.Calendar;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.concurrent.TimeUnit;
 
-import PlanetSim.util.Tools;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class View extends JFrame implements Runnable {
 	
@@ -67,62 +50,46 @@ public class View extends JFrame implements Runnable {
 	static final int DEFAULT_SIM_LENGTH = 12;
 	static final double DEFAULT_ECCENTRICITY = 0.0167;
 	static final double DEFAULT_TILT = 23.44;
-	static final String DEFAULT_DATE_TIME = "04-Jan-2014 12:00:00 AM";
 
-	// Swing variables
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTabbedPane tabbedPane;
-	private JPanel simPresPane;
-	private JButton btnStart;
-	private JButton btnResumePause;
-	private JButton btnStop;
-	private JButton btnRunQuery;
-	private JProgressBar progressBar;
-	private JSpinner spnSimEccentricity;
-	private JSpinner spnSimTilt;
-	private JSpinner spnGridSpacing;
-	private JSpinner spnTimeStep;
-	private JSpinner spnDisplayRate;
-	private JSpinner spnSimLength;
-	private JTextField txtSimName;
-	private JCheckBox cbSimVisibility;
-	
-	// Thread model
-	BlockingQueue<Object> queue = null;
-	Map map = null;
-	private boolean running = true;
-	private boolean paused = false;
-	private boolean newConfig = false;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					View frame = new View(null);
+					frame.setTitle("Heated Planet Simulator");
+					frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+					frame.setResizable(false);
+					frame.setVisible(true);
+					frame.pack();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 	
 	/**
 	 * This should be all we need to put this in its own thread
 	 */
 	@Override
 	public void run() {
-		// Load UI
-		this.setTitle("Heated Planet Simulator");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setResizable(false);
-		this.setVisible(true);
-		this.pack();
-		
-		while(this.isRunning()) {
-			while(!btnStart.isEnabled()) {
-				try {
-					map = (Map) queue.poll(2, TimeUnit.MILLISECONDS);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				System.out.println(map);
-			}
-		}
-		
 		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+			View frame = new View(null);
+			frame.setTitle("Heated Planet Simulator");
+			frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+			frame.setResizable(false);
+			frame.setVisible(true);
+			frame.pack();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -130,7 +97,7 @@ public class View extends JFrame implements Runnable {
 	/**
 	 * Create the frame.
 	 */
-	public View(BlockingQueue<Object> queue) { //TODO we still need to add the functionality to display the queue
+	public View(BlockingQueue<Object> displayQueue) { //TODO we still need to add the functionality to display the queue
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(50, 50, WIN_WIDTH, WIN_HEIGHT);
 		contentPane = new JPanel();
@@ -138,7 +105,7 @@ public class View extends JFrame implements Runnable {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.SOUTH);
 		
 		JPanel simContentPane = new JPanel();
@@ -151,7 +118,7 @@ public class View extends JFrame implements Runnable {
 		gbl_simContentPane.rowWeights = new double[]{0.0, 0.0};
 		simContentPane.setLayout(gbl_simContentPane);
 		
-		simPresPane = new JPanel();
+		JPanel simPresPane = new JPanel();
 		simPresPane.setBorder(new LineBorder(new Color(0, 0, 0)));
 		GridBagConstraints gbc_simPresPane = new GridBagConstraints();
 		gbc_simPresPane.fill = GridBagConstraints.BOTH;
@@ -191,7 +158,7 @@ public class View extends JFrame implements Runnable {
 		simLeftPane.add(progressPane, gbc_progressPane);
 		progressPane.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 5));
 		
-		progressBar = new JProgressBar();
+		JProgressBar progressBar = new JProgressBar();
 		progressBar.setPreferredSize(new Dimension(380, 22));
 		progressBar.setString("Click 'Start' To Begin");
 		progressBar.setStringPainted(true);
@@ -212,7 +179,7 @@ public class View extends JFrame implements Runnable {
 		lblSimName.setBorder(new EmptyBorder(0, 10, 0, 0));
 		simSettingsPane.add(lblSimName);
 		
-		txtSimName = new JTextField();
+		JTextField txtSimName = new JTextField();
 		lblSimName.setLabelFor(txtSimName);
 		txtSimName.setEditable(false);
 		txtSimName.setColumns(10);
@@ -222,7 +189,7 @@ public class View extends JFrame implements Runnable {
 		lblGridSpacing.setBorder(new EmptyBorder(0, 10, 0, 0));
 		simSettingsPane.add(lblGridSpacing);
 		
-		spnGridSpacing = new JSpinner(new SpinnerListModel(new String[] {"1", "2", "3", "4", "5", "6", "9", "10", "12", "15", "18", "20", "30", "36", "45", "60", "90", "180"}));
+		JSpinner spnGridSpacing = new JSpinner(new SpinnerListModel(new String[] {"1", "2", "3", "4", "5", "6", "9", "10", "12", "15", "18", "20", "30", "36", "45", "60", "90", "180"}));
 		spnGridSpacing.setValue(String.valueOf(DEFAULT_GRID_SPACING));
 		spnGridSpacing.setFont( new Font("Arial", Font.BOLD, 12));
 		lblGridSpacing.setLabelFor(spnGridSpacing);
@@ -232,7 +199,7 @@ public class View extends JFrame implements Runnable {
 		lblTimeStep.setBorder(new EmptyBorder(0, 10, 0, 0));
 		simSettingsPane.add(lblTimeStep);
 		
-		spnTimeStep = new JSpinner();
+		JSpinner spnTimeStep = new JSpinner();
 		spnTimeStep.setModel(new SpinnerNumberModel(DEFAULT_TIME_STEP, 1, 525600, 1));
 		lblTimeStep.setLabelFor(spnTimeStep);
 		simSettingsPane.add(spnTimeStep);
@@ -241,7 +208,7 @@ public class View extends JFrame implements Runnable {
 		lblDisplayRate.setBorder(new EmptyBorder(0, 10, 0, 0));
 		simSettingsPane.add(lblDisplayRate);
 		
-		spnDisplayRate = new JSpinner();
+		JSpinner spnDisplayRate = new JSpinner();
 		spnDisplayRate.setModel(new SpinnerNumberModel(DEFAULT_DISPLAY_RATE, 1, 1000, 1));
 		lblDisplayRate.setLabelFor(spnDisplayRate);
 		simSettingsPane.add(spnDisplayRate);
@@ -250,7 +217,7 @@ public class View extends JFrame implements Runnable {
 		lblSimLength.setBorder(new EmptyBorder(0, 10, 0, 0));
 		simSettingsPane.add(lblSimLength);
 		
-		spnSimLength = new JSpinner();
+		JSpinner spnSimLength = new JSpinner();
 		spnSimLength.setModel(new SpinnerNumberModel(DEFAULT_SIM_LENGTH, 1, 1200, 1));
 		lblSimLength.setLabelFor(spnSimLength);
 		simSettingsPane.add(spnSimLength);
@@ -300,7 +267,7 @@ public class View extends JFrame implements Runnable {
 		lblSimEccentricity.setBorder(new EmptyBorder(0, 10, 0, 0));
 		physFactorsPane.add(lblSimEccentricity);
 		
-		spnSimEccentricity = new JSpinner();
+		JSpinner spnSimEccentricity = new JSpinner();
 		spnSimEccentricity.setModel(new SpinnerNumberModel(DEFAULT_ECCENTRICITY, 0, .9999, 0.0001));
 		spnSimEccentricity.setEditor(new JSpinner.NumberEditor(spnSimEccentricity,"0.0000"));
 		lblSimEccentricity.setLabelFor(spnSimEccentricity);
@@ -310,7 +277,7 @@ public class View extends JFrame implements Runnable {
 		lblSimTilt.setBorder(new EmptyBorder(0, 10, 0, 0));
 		physFactorsPane.add(lblSimTilt);
 		
-		spnSimTilt = new JSpinner();		
+		JSpinner spnSimTilt = new JSpinner();		
 		spnSimTilt.setModel(new SpinnerNumberModel(DEFAULT_TILT, -180.0, 180.0, 0.01));
 		spnSimTilt.setEditor(new JSpinner.NumberEditor(spnSimTilt,"0.00"));  
 		lblSimTilt.setLabelFor(spnSimTilt);
@@ -329,7 +296,7 @@ public class View extends JFrame implements Runnable {
 		gbl_simControlsPane.rowWeights = new double[]{0.0, 0.0};
 		simControlsPane.setLayout(gbl_simControlsPane);
 		
-		btnStart = new JButton("Start");
+		JButton btnStart = new JButton("Start");
 		btnStart.setToolTipText("Start Simulation");
 		GridBagConstraints gbc_btnStart = new GridBagConstraints();
 		gbc_btnStart.anchor = GridBagConstraints.NORTHEAST;
@@ -338,7 +305,7 @@ public class View extends JFrame implements Runnable {
 		gbc_btnStart.gridy = 0;
 		simControlsPane.add(btnStart, gbc_btnStart);
 		
-		btnResumePause = new JButton("Pause");
+		JToggleButton btnResumePause = new JToggleButton("Pause");
 		btnResumePause.setEnabled(false);
 		btnResumePause.setToolTipText("Toggle Simulation");
 		GridBagConstraints gbc_btnResumePause = new GridBagConstraints();
@@ -348,7 +315,7 @@ public class View extends JFrame implements Runnable {
 		gbc_btnResumePause.gridy = 0;
 		simControlsPane.add(btnResumePause, gbc_btnResumePause);
 		
-		btnStop = new JButton("Stop");
+		JButton btnStop = new JButton("Stop");
 		btnStop.setToolTipText("Stop Simulation");
 		btnStop.setEnabled(false);
 		GridBagConstraints gbc_btnStop = new GridBagConstraints();
@@ -358,7 +325,7 @@ public class View extends JFrame implements Runnable {
 		gbc_btnStop.gridy = 0;
 		simControlsPane.add(btnStop, gbc_btnStop);
 		
-		cbSimVisibility = new JCheckBox("If checked, simulation animation is not displayed.");
+		JCheckBox cbSimVisibility = new JCheckBox("If checked, simulation animation is not displayed.");
 		cbSimVisibility.setActionCommand("");
 		cbSimVisibility.setToolTipText("If checked, simulation animation is not displayed.");
 		GridBagConstraints gbc_cbSimVisibility = new GridBagConstraints();
@@ -614,131 +581,10 @@ public class View extends JFrame implements Runnable {
 		pnlQueryControlsPane.setBorder(new TitledBorder(null, "Query Controls", TitledBorder.LEADING, TitledBorder.TOP, new Font("Tahoma", Font.PLAIN, 12), null));
 		queryParamsPane.add(pnlQueryControlsPane);
 		
-		btnRunQuery = new JButton("Run Search Query");
+		JButton btnRunQuery = new JButton("Run Search Query");
 		btnRunQuery.setVerticalAlignment(SwingConstants.BOTTOM);
 		pnlQueryControlsPane.add(btnRunQuery);
 		tabbedPane.setEnabledAt(1, true);
+	}
 
-		// start simulation
-		btnStart.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {		
-				// disable controls
-				btnResumePause.setEnabled(true);
-				toggleSimControls(false);
-				progressBar.setString(DEFAULT_DATE_TIME + " (0%)");
-				// TODO: progressBar.setMaximum();
-				start();
-			}
-		});
-		
-		// resume and pause simulation
-		btnResumePause.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(!isPaused()) {
-					btnResumePause.setText("Resume");
-					btnStop.setEnabled(true);
-					pause();
-				}
-				else {
-					btnResumePause.setText("Pause");
-					btnStop.setEnabled(false);
-					resume();
-				}
-			}
-		});
-		
-		// stop simulation
-		btnStop.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				btnResumePause.setText("Pause");
-				btnResumePause.setEnabled(false);
-				btnStop.setEnabled(false);
-				progressBar.setString("Click 'Start' To Begin");
-				progressBar.setValue(0);
-				toggleSimControls(true);
-				resume();
-			}
-		});
-		
-		// toggle visibility
-		cbSimVisibility.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				simPresPane.setVisible(!cbSimVisibility.isSelected());
-			}
-		});
-	}
-	
-	public void toggleSimControls(boolean bool) {
-		btnStart.setEnabled(bool);
-		tabbedPane.setEnabledAt(1, bool);
-		spnGridSpacing.setEnabled(bool);
-		spnTimeStep.setEnabled(bool);
-		spnDisplayRate.setEnabled(bool);
-		spnSimLength.setEnabled(bool);
-		spnSimEccentricity.setEnabled(bool);
-		spnSimTilt.setEnabled(bool);
-	}
-	
-	public void pause(){
-		this.paused = true;
-	}
-	
-	public void resume(){
-		this.paused = false;
-	}
-	
-	public void stop(){
-		// closes the thread/view
-		// this.running = false;
-	}
-	
-	public void start(){
-		this.newConfig = true;
-	}
-	
-	public void configReset(){
-		System.out.println("View:System start Reset");
-		this.newConfig = false;
-	}
-	
-	public boolean isRunning(){
-		return this.running;
-	}
-	
-	public boolean isPaused(){
-		return this.paused;
-	}
-	
-	public boolean newConfigStarted(){
-		return this.newConfig;
-	}
-	
-	public String getSimName(){
-		return "";		
-	}
-	
-	public double getOrbit(){
-		return (double)spnSimEccentricity.getValue();
-	}
-	
-	public double getTilt(){
-		return (double)spnSimTilt.getValue();		
-	}
-	
-	public int getGSpacing(){
-		return Integer.parseInt(spnGridSpacing.getValue().toString());	
-		
-	}
-	
-	public int getStep(){
-		return (int)spnTimeStep.getValue();
-	}
-	
-	public int getDuration(){
-		return (int)spnSimLength.getValue();
-	}
 }
