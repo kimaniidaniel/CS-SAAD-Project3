@@ -284,7 +284,7 @@ public class DBModel
 
     public void updateConfig(String Name, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length)
     {
-
+    	
         this.name = (Name == "") ? "Sim" + this.getTimeStamp() : Name;
         this.temporalPrecision = TemporalPrecision;
         this.geographicalPrecision = GeographicalPrecision;
@@ -347,17 +347,17 @@ public class DBModel
 
     public void storeMap(Map map)
     {
+
         if (!previousSimDetected) {																//will skip storage if previous simulation detected
             if ( validTemporal((int) map.get("Iter"))  || temporalPrecision == 100) {			//will count down the number of allowable temporal saves
-                if (geoPrecCtr++ < ( this.geoInterval * (  this.geographicalPrecision / 100 )) || (geographicalPrecision == 100)) {	    //will count down the number of allowable geographical saves
+                if (geoPrecCtr++ < ( this.geoInterval * (  ( this.geographicalPrecision * 1.0 ) / 100 )) || (geographicalPrecision == 100)) {	    //will count down the number of allowable geographical saves
                     try {
                         insertGridData((double) map.get("Lat"), (double) map.get("Lon"), (double) map.get("Temp"), (int) map.get("Iter"), (long)map.get("Day"), (long)map.get("Min"), this.CONFIG_ID);
                     } catch (SQLException e) {
-
                         e.printStackTrace();
                         System.exit(0);
                     }
-                } else if (geoPrecCtr == this.geoInterval) {  geoPrecCtr = 0;  }
+                } else if (geoPrecCtr == this.geoInterval) {  geoPrecCtr = 0; }
 
             }
         }
@@ -378,24 +378,27 @@ public class DBModel
     /**
      * Query the database for simulated stored data
      */
-    public QueryResult Query(String Name, int StoragePrecision, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing)
+    public QueryResult Query(int configId, String Name, int StoragePrecision, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing)
     {
         String sqlCommand = String.format("SELECT * FROM '%s' WHERE 1=1 ", SIM_CONFIG_TBL);
         ResultSet rs = null;
-        int configId = 0;
+        // int configId = 0;
         Utils.QueryResult result = new Utils.QueryResult();
         List<Utils.SimulationConfig> SimulationConfigs = new ArrayList<>();
         List<Utils.TemperatureReading> TemperaturReadings = new ArrayList<>();
-                                                                                                                    /* Build query SQL command */
-        sqlCommand += (isEmptyOrNull(Name))     ?"":String.format(" AND Name ='%s'", Name);
-        sqlCommand += ((StoragePrecision)>0)    ?"":String.format(" AND StoragePrecision = %d", StoragePrecision);
-        sqlCommand += ((TemporalPrecision)>0)   ?"":String.format(" AND TemporalPrecision = %d", TemporalPrecision);
-        sqlCommand += ((GeographicalPrecision)>0)?"":String.format(" AND GeographicalPrecision = %d", GeographicalPrecision);
-        sqlCommand += (isEmptyOrNull(StartDate))?"":String.format(" AND StartDate <= '%s'", StartDate);
-        sqlCommand += ((Orbit)>0)               ?"":String.format(" AND Orbit = %f", Orbit);
-        sqlCommand += ((Tilt)>0)                ?"":String.format(" AND Tilt = %f", Tilt);
-        sqlCommand += ((GridSpacing)>0)         ?"":String.format(" AND GridSpacing = %d", GridSpacing);
-
+                                                 
+        /* Build query SQL command */
+        sqlCommand += (configId>0)     				?String.format(" AND CONFIG_ID = %d", configId):"";
+        sqlCommand += !(isEmptyOrNull(Name))     ?String.format(" AND Name ='%s'", Name):"";
+        sqlCommand += ((StoragePrecision)>0)    ?String.format(" AND StoragePrecision = %d", StoragePrecision):"";
+        sqlCommand += ((TemporalPrecision)>0)   ?String.format(" AND TemporalPrecision = %d", TemporalPrecision):"";
+        sqlCommand += ((GeographicalPrecision)>0)?String.format(" AND GeographicalPrecision = %d", GeographicalPrecision):"";
+        sqlCommand += !(isEmptyOrNull(StartDate))?String.format(" AND StartDate <= '%s'", StartDate):"";
+        sqlCommand += ((Orbit)>0)               ?String.format(" AND Orbit = %f", Orbit):"";
+        sqlCommand += ((Tilt)>0)                ?String.format(" AND Tilt = %f", Tilt):"";
+        sqlCommand += ((GridSpacing)>0)         ?String.format(" AND GridSpacing = %d", GridSpacing):"";
+        sqlCommand += " ORDER BY CONFIG_ID DESC";
+        
         try {
             Statement stmt = this.conn.createStatement();                                                           /* Execute SQL command */
             rs = stmt.executeQuery(sqlCommand);
@@ -409,17 +412,20 @@ public class DBModel
             while ( rs.next() ) {                                                                                   /* Iterate through the resulting recordset and build the SimulationConfig object */
                 Utils.SimulationConfig simConfig = new Utils.SimulationConfig();
                 simConfig.setConfigId(rs.getInt("CONFIG_ID"));
-                simConfig.EntryTime             = rs.getTimestamp("EntryTime");
+                simConfig.Name             		= rs.getString("Name");
+                simConfig.EntryTime             = null;
                 simConfig.GeographicPrecision   = rs.getInt("GeographicalPrecision");
                 simConfig.StoragePrecision      = rs.getInt("StoragePrecision");
                 simConfig.TemporalPrecision     = rs.getInt("TemporalPrecision");
                 simConfig.Orbit                 = rs.getDouble("Orbit");
                 simConfig.Tilt                  = rs.getDouble("Tilt");
-                simConfig.StartDate             = rs.getNString("StartDate");
+                simConfig.StartDate             = rs.getString("StartDate");
                 simConfig.GridSpacing           = rs.getInt("GridSpacing");
                 simConfig.TimeStep              = rs.getInt("TimeStep");
                 simConfig.Length                = rs.getInt("Length");
-                simConfig.TemperatureReadings   = QueryGetSimCells(configId,minTemp,maxTemp, meanTemp);                                         /* Get all cells for this config and add it to the collection */
+                if(configId>0) {
+                	simConfig.TemperatureReadings   = QueryGetSimCells(configId,minTemp,maxTemp, meanTemp);                                         /* Get all cells for this config and add it to the collection */
+                }
                 simConfig.MinTemp               = minTemp;
                 simConfig.MaxTemp               = maxTemp;
                 minTempTotal                    = (minTempTotal.Temperatue < minTemp.Temperatue)?minTempTotal:minTemp;      /* get minimum temperature over times */
@@ -451,7 +457,8 @@ public class DBModel
      * Queries Cell information based on configId and returns a list of TemperatureReading
      */
     private List<TemperatureReading> QueryGetSimCells(int configId, TemperatureReading minTemp, TemperatureReading maxTemp, double meanTemp ) {
-        String sqlCommand;
+
+    	String sqlCommand;
         ResultSet rs = null;
         List<TemperatureReading> TemperaturReadings = new ArrayList<>();
         sqlCommand = String.format("SELECT * FROM '%s' WHERE CONFIG_ID = %d ", PLANET_CELLS_TBL, configId);         /* query cell details */
