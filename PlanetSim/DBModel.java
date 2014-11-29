@@ -271,7 +271,7 @@ public class DBModel
         try {
             Statement stmt = this.conn.createStatement();
             ResultSet rs = stmt.executeQuery(statement);
-            next_number = rs.getInt("rowcount");
+            next_number = rs.getInt("rowcount") + 1;
             System.out.println("NEXT INDEX FOR " + table + " is " + next_number);
             rs.close();
             stmt.close();

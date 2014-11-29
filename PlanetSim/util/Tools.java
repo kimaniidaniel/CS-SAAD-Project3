@@ -14,8 +14,8 @@ public class Tools {
     private static String start_date_string = "04-Jan-2014";
     private static SimpleDateFormat start_date_formatter = new SimpleDateFormat("dd-MMM-yyyy");
     private static SimpleDateFormat start_minute_formatter = new SimpleDateFormat("HH:mm:ss a");
-    private Date startDate = getStartDate();
-    private long MILLSEC_PER_MINUTE = 60 * 1000;
+    private static Date startDate = getStartDate();
+    private static long MILLSEC_PER_MINUTE = 60 * 1000;
 
     public static ArrayList<Map> validateInput(String args[])
     {
@@ -55,8 +55,8 @@ public class Tools {
         System.exit(0);
     }
 
-    public long convertIterationToLong(long target, long step){
-        return  startDate.getTime() + (target* step * this.MILLSEC_PER_MINUTE);
+    public static long convertIterationToLong(long target, long step){
+        return  startDate.getTime() + (target* step * MILLSEC_PER_MINUTE);
     }
     public String getDate(long target){
         //pass in the start date, number of iterations and the steps

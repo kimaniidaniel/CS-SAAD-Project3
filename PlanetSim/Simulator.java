@@ -26,7 +26,7 @@ public final class Simulator extends ThreadModel {
 	private static final int DEFAULT_DEGREES = 15;
 	private static final int DEFAULT_SPEED = 1; // minutes
 	private static final int MAX_DEGREES = 180;
-	private static final int MAX_SPEED = 1440;
+	private static final int MAX_SPEED = 525600;
 	private static final int DEFAULT_SIM_LENGTH = 12 * 30 * 1440;  // one Solar year
 
 	private static final int[] increments = { 1,2,3,4,5,6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180 };
@@ -77,6 +77,7 @@ public final class Simulator extends ThreadModel {
 	}
 
 	public void configure(double eccentricity, double Tilt, int gs, int timeStep, int simlength) {
+		System.out.println("Ecc: " + eccentricity + ", Tilt: " + Tilt + ", Grid: " + gs + ", TStp: " + timeStep + ", SLth:" + simlength);
 		E = eccentricity;
 		tilt = Tilt;
 		configure(gs, timeStep, simlength);
@@ -92,6 +93,7 @@ public final class Simulator extends ThreadModel {
 			throw new IllegalArgumentException("Invalid speed setting");
 
 		this.timeStep = timeStep;
+		//System.out.println("Simulator: TimeStep: "+timeStep);
 
 		// The following could be done better - if we have time, we should do so
 		if (MAX_DEGREES % gs != 0) {
@@ -107,6 +109,8 @@ public final class Simulator extends ThreadModel {
 
 		if (simlength != -1) {
 			this.simlen = this.month2Miniute(simlength, timeStep);
+			//System.out.println("Simulator: SimLen: "+simlen);
+			
 		}
 
 		this.start();
@@ -203,6 +207,12 @@ public final class Simulator extends ThreadModel {
 	}
 
 	public boolean isComplete() {
+		//if (currentTimeInSimulation < this.simlen){
+		//	return false;
+		//} else {
+		//	this.stop();
+		//	return true;
+		//}
 		if (currentTimeInSimulation >= this.simlen){
 			System.out.println("SIM:COMPLETE:"+(currentTimeInSimulation < this.simlen )+":CURRENTTIME:"+currentTimeInSimulation+":SIMLENGTH:"+this.simlen);
 			this.stop();
@@ -225,7 +235,9 @@ public final class Simulator extends ThreadModel {
 
 		currentStep++;
 
-		int t = timeStep * currentStep;
+		//int t = timeStep * currentStep;
+		int t = currentStep;
+		//System.out.println("Timestep: " + timeStep + ", currentStep: " + currentStep);
 		int rotationalAngle = 360 - ((t % MAX_SPEED) * 360 / MAX_SPEED);
 		sunPositionCell = ( (width * rotationalAngle) / 360 ) % width;
 
@@ -274,6 +286,8 @@ public final class Simulator extends ThreadModel {
 				map.put("Lat", (double) child.getLatitude());
 				map.put("Temp", (double) child.getTemp());
 				map.put("Iter", Simulator.currentTimeInSimulation);
+				map.put("Day", Tools.convertIterationToLong(simlen, Simulator.currentTimeInSimulation));
+				map.put("Min", Tools.convertIterationToLong(simlen, Simulator.currentTimeInSimulation));
 				// Adding data to array block queue
 				queue.put(map);
 			}
@@ -300,7 +314,7 @@ public final class Simulator extends ThreadModel {
 	}
 
 	private void createRow(GridCell curr, GridCell next, GridCell bottom,
-						   GridCell left, int y) {
+			GridCell left, int y) {
 
 		for (int x = 1; x < width; x++) {
 
@@ -317,7 +331,7 @@ public final class Simulator extends ThreadModel {
 	}
 
 	private void createRowCell(GridCell curr, GridCell next, GridCell bottom,
-							   int x, int y) {
+			int x, int y) {
 
 		if (curr.getLeft() != null) {
 			GridCell l = curr.getLeft();
@@ -385,11 +399,11 @@ public final class Simulator extends ThreadModel {
 	public int getWidth() {
 		return this.width;
 	}
-
+	
 	public float getSunPositionDeg() {
 		return Simulator.sunPositionDeg;
 	}
-
+	
 	public int month2Miniute(int month, int timestep) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(Tools.getStartDate());
@@ -399,7 +413,7 @@ public final class Simulator extends ThreadModel {
 
 		return (int) ((endDate - startDate) / (60000 * timestep));
 	}
-
+	
 //	public void printGrid(){
 //		GridCell curr = this.prime;
 //		//System.out.println(height);

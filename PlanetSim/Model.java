@@ -30,7 +30,7 @@ public class Model extends ThreadModel{
 				try {
 					System.out.println("MODEL:DEQUEUE");
 					map = dequeue(simQueue);	//retrieves data from simulator
-					System.out.println(map);
+					System.out.println("Map MODEL: " + map);
 					this.db.storeMap(map);		//presents to the DBModel for processing
 					System.out.println("MODEL:ENQUEUE");
 					enqueue(viewQueue,map);		//returns the values to the controller
