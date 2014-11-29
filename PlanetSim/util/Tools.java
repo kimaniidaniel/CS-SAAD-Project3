@@ -8,10 +8,7 @@ import PlanetSim.Model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Tools {
     private static String start_date_string = "04-Jan-2014";
@@ -64,7 +61,7 @@ public class Tools {
     public String getDate(long target){
         //pass in the start date, number of iterations and the steps
         //returns string value in dd-MMM-yyyy format
-       return this.start_date_formatter.format(new Date(target));
+        return this.start_date_formatter.format(new Date(target));
     }
     public String getTime(long target){
         //pass in the
@@ -103,4 +100,19 @@ public class Tools {
                 return true;
         }return false;
     }
+
+    public static long getTotalLength(int length){
+        final Calendar date = Calendar.getInstance();
+        date.setTime(getStartDate());
+        date.add(Calendar.MONTH,length);
+        return date.getTime().getTime();
+    }
+
+    //   final Calendar date = Calendar.getInstance();
+    //   date.set(2012, Calendar.SEPTEMBER, 17);
+
+//    int prevDayOfWeekInMonth = date.get(Calendar.DAY_OF_WEEK_IN_MONTH);
+//    int prevDayOfWeek = date.get(Calendar.DAY_OF_WEEK);
+
+//    date.add(Calendar.MONTH, 1);
 }

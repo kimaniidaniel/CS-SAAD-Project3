@@ -11,6 +11,7 @@
 //-t #: The temporal precision of the temperature data to be stored, as an integer percentage of the number of time periods saved versus the number computed. The default is 100%; that is, all computed values should be stored.
 package PlanetSim;
 
+import PlanetSim.util.Tools;
 import Utils.QueryResult;
 import Utils.TemperatureReading;
 import java.sql.Connection;
@@ -67,7 +68,6 @@ public class DBModel
     private long MAX_NUM_TRANS_TILL_COMMIT = 10000;	//used to adjust performance affects CPU
     private int ITER_FOR_GARBAGE_COLLECTION = 100000;	//used to adjust performance affects CPU
     // current simulation settings
-    private int storagePrecision;
     private int temporalPrecision = 100;
     private int geographicalPrecision = 100;
     private String startDate;
@@ -80,8 +80,11 @@ public class DBModel
     private int CONFIG_ID;
     // current simulation settings
     private boolean previousSimDetected = false;			//flag to disable storage if previously stored
+    private int geoInterval;
+    private long tempInterval = (this.length*this.timeStep);
     private int geoPrecCtr = 0;							//used to track precision
     private int tempPrecCtr = 0;						//used to track precision
+    private long currentStep;
 
     private Connection conn;
 
@@ -149,12 +152,13 @@ public class DBModel
         String statement = "INSERT INTO " + SIM_CONFIG_TBL + " (Name,TemporalPrecision,GeographicalPrecision,StartDate,Orbit,Tilt,GridSpacing,TimeStep,Length,EntryTime) "
                 + "VALUES ('" + Name + "'," + TemporalPrecision + "," + GeographicalPrecision + ",'" + StartDate + "'," + Orbit + "," + Tilt + "," + GridSpacing + "," + TimeStep + "," + Length + "," + EntryTime + ");";
         try {
-        	Statement stmt = this.conn.createStatement();
+            Statement stmt = this.conn.createStatement();
             stmt.executeUpdate(statement);
             this.conn.commit();
         } catch (Exception e) {
-        	throw e;
+            throw e;
         }
+
         cleanUp();
 
     }
@@ -165,10 +169,10 @@ public class DBModel
         String statement = "INSERT INTO " + PLANET_CELLS_TBL + " (CONFIG_ID,Latitude,Longitude,Temperature,Step,Reading_Date,Reading_Time,TransActionTime) "
                 + "VALUES (" + this.CONFIG_ID + "," + Latitude + "," + Longitude + "," + Temperature + "," + Step + ",'" + Reading_Date + "','" + Reading_Time + "','" + getTimeStamp() + "');";
         try {
-        	Statement stmt = this.conn.createStatement();
+            Statement stmt = this.conn.createStatement();
             stmt.executeUpdate(statement);
         } catch (Exception e) {
-        	throw e;
+            throw e;
         }
         cleanUp();
 
@@ -187,7 +191,7 @@ public class DBModel
             c = DriverManager.getConnection("jdbc:sqlite:" + databaseName);		// creates db if not present or open if it is
             c.setAutoCommit(false);											// turns off AutoCommit for performance issues
             try {
-            	Statement stmt = c.createStatement();
+                Statement stmt = c.createStatement();
                 if (this.isDebug()) {
                     System.out.println("Creating:" + SIM_CONFIG_TBL);
                 }
@@ -199,7 +203,7 @@ public class DBModel
                 c.commit();
             }
             catch (Exception e) {
-            	throw e;
+                throw e;
             }
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -222,8 +226,7 @@ public class DBModel
 
     public void getConfig_ID()
     {
-        String statement = "SELECT CONFIG_ID FROM " + SIM_CONFIG_TBL + " WHERE StoragePrecision = " + this.storagePrecision
-                + " AND TemporalPrecision = " + this.temporalPrecision
+        String statement = "SELECT CONFIG_ID FROM " + SIM_CONFIG_TBL + " WHERE TemporalPrecision = " + this.temporalPrecision
                 + " AND GeographicalPrecision = " + this.temporalPrecision
                 + " AND StartDate = '" + this.startDate
                 + "' AND Orbit = " + this.orbit
@@ -233,8 +236,8 @@ public class DBModel
                 + " AND Length = " + this.length + ";";
         try {
             try {
-            	Statement stmt = this.conn.createStatement(); 
-            	ResultSet rs = stmt.executeQuery(statement);
+                Statement stmt = this.conn.createStatement();
+                ResultSet rs = stmt.executeQuery(statement);
                 //sets CONFIG_ID to the stored CONFIG_ID if found, or the next number in the index
                 if (rs.next()) {
                     this.CONFIG_ID = rs.getInt("CONFIG_ID");
@@ -250,7 +253,7 @@ public class DBModel
 
                 }
             } catch (Exception e) {
-            	throw e;
+                throw e;
             }
             this.conn.commit();
         } catch (SQLException e) {
@@ -291,6 +294,8 @@ public class DBModel
         this.gridSpacing = GridSpacing;
         this.timeStep = TimeStep;
         this.length = Length;
+        this.geoInterval = ((360 * 180)/this.gridSpacing);
+        this.tempInterval = Tools.getTotalLength(this.length)/100;
         getConfig_ID();
 
     }
@@ -343,8 +348,8 @@ public class DBModel
     public void storeMap(Map map)
     {
         if (!previousSimDetected) {																//will skip storage if previous simulation detected
-            if ((temporalPrecision - tempPrecCtr++) > 0 || temporalPrecision == 100) {					//will count down the number of allowable temporal saves
-                if ((geographicalPrecision - geoPrecCtr++) > 0 || (geographicalPrecision == 100)) {	//will count down the number of allowable geographical saves
+            if ( validTemporal((int) map.get("Iter"))  || temporalPrecision == 100) {			//will count down the number of allowable temporal saves
+                if (geoPrecCtr++ < ( this.geoInterval * (  this.geographicalPrecision / 100 )) || (geographicalPrecision == 100)) {	    //will count down the number of allowable geographical saves
                     try {
                         insertGridData((double) map.get("Lat"), (double) map.get("Lon"), (double) map.get("Temp"), (int) map.get("Iter"), (long)map.get("Day"), (long)map.get("Min"), this.CONFIG_ID);
                     } catch (SQLException e) {
@@ -352,14 +357,17 @@ public class DBModel
                         e.printStackTrace();
                         System.exit(0);
                     }
-                } else {
-                    geoPrecCtr = 0;
-                }
+                } else if (geoPrecCtr == this.geoInterval) {  geoPrecCtr = 0;  }
 
-            } else {
-                tempPrecCtr = 0;
             }
         }
+    }
+
+    private boolean validTemporal(long x){
+        if ( this.currentStep == x ) { if ( tempPrecCtr < ( this.tempInterval * (  this.temporalPrecision / 100 ) ) ) { return true; } else {  return false; }  }
+        else if ( tempPrecCtr < ( this.tempInterval * (  this.temporalPrecision / 100 ) ) ) { this.currentStep = x; tempPrecCtr++; if ( tempPrecCtr < this.tempInterval ) { return true; } else{  return false; } }
+        else if ( tempPrecCtr == this.tempInterval ) { tempPrecCtr = 0; }
+        return false;
     }
 
     public void manualCommit() throws SQLException
