@@ -118,7 +118,7 @@ public class View extends JFrame implements Runnable {
 			while(!btnStart.isEnabled()) {
 				System.out.println("VIEW: Is Enabled");
 				try {
-					map = (Map) queue.poll(2, TimeUnit.MILLISECONDS);
+					//map = (Map) queue.poll(2, TimeUnit.MILLISECONDS);
 					System.out.println("map VIEW");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block

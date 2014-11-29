@@ -257,11 +257,20 @@ public final class Simulator extends ThreadModel {
 
 		prime.visited(true);
 		bfs.add(prime);
-
+		
 		//P3 - Heated Planet
 		//Earth.currentTimeInSimulation = t * 100;  // for speeding up the simulation
 		Simulator.currentTimeInSimulation = t;
 
+		map.put("Lon", (double) prime.getLongitude());
+		map.put("Lat", (double) prime.getLatitude());
+		map.put("Temp", (double) prime.getTemp());
+		map.put("Iter", Simulator.currentTimeInSimulation);
+		map.put("Day", Tools.convertIterationToLong(simlen, Simulator.currentTimeInSimulation));
+		map.put("Min", Tools.convertIterationToLong(simlen, Simulator.currentTimeInSimulation));
+		// Adding data to array block queue
+		queue.put(map);
+		
 //		System.out.println("Current time on Earth:" + Simulator.currentTimeInSimulation);
 //		System.out.println("Distance from the Sun:" + prime.distanceFromPlanet(Simulator.currentTimeInSimulation));
 
@@ -290,9 +299,13 @@ public final class Simulator extends ThreadModel {
 				map.put("Min", Tools.convertIterationToLong(simlen, Simulator.currentTimeInSimulation));
 				// Adding data to array block queue
 				queue.put(map);
+
+//                System.out.println(map + "<<<");
+
 			}
 		}
 
+		
 //		System.out.println("Current average sun temperature:");
 //		System.out.println(suntotal /  (width * height));
 
