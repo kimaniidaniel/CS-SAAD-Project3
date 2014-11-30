@@ -69,13 +69,16 @@ public final class Simulator extends ThreadModel {
 
 	public Simulator(BlockingQueue<Object> q) {
 		this.queue = q;
-
 	}
 
 	public GridCell getGrid() {
 		return prime;
 	}
 
+	public void configure() {
+		this.configure(this.gs, this.timeStep, this.simlen);
+	}
+	
 	public void configure(double eccentricity, double Tilt, int gs, int timeStep, int simlength) {
 		System.out.println("Ecc: " + eccentricity + ", Tilt: " + Tilt + ", Grid: " + gs + ", TStp: " + timeStep + ", SLth:" + simlength);
 		E = eccentricity;
@@ -113,12 +116,12 @@ public final class Simulator extends ThreadModel {
 			
 		}
 
-		this.start();
+		this.initiate();
 
 		this.resume();
 	}
 
-	private void start() {
+	private void initiate() {
 
 		// reset the current time in simulation
 		currentTimeInSimulation = 0;
@@ -193,6 +196,7 @@ public final class Simulator extends ThreadModel {
 
 	public void run() {
 //		System.out.println("still running");
+		this.configure();
 		while (this.isRunning()) {
 			while (!this.isPaused() && !this.isComplete()) {
 				try {
@@ -223,11 +227,6 @@ public final class Simulator extends ThreadModel {
 	}
 
 	public void generate() throws InterruptedException {
-
-		// Don't attempt to generate if output queue is full...
-//		if(Buffer.getBuffer().getRemainingCapacity() == 0) {
-//			return;
-//		}
 
 		//System.out.println("generating grid...");
 		Queue<GridCell> bfs = new LinkedList<GridCell>();
@@ -300,7 +299,7 @@ public final class Simulator extends ThreadModel {
 				// Adding data to array block queue
 				queue.put(map);
 
-//                System.out.println(map + "<<<");
+                System.out.println(map + "<<<");
 
 			}
 		}
