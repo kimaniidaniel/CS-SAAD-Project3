@@ -86,6 +86,8 @@ public class Controller extends ThreadModel{
 
 			}
 			
+			ui.stop();
+			
 			if(ui.newConfigStarted()) {
 				System.out.println("Model Stop");
 				model.stop();
