@@ -15,7 +15,7 @@ Compilation Instructions:
 2. Ensure ~/bin exists, if not create it
 3. Issue the following command for the program:
 
-	javac -d bin -sourcepath src src/PlanetSim/Demo.java
+	javac -d bin -sourcepath src PlanetSim/Demo.java
 
 Command-line invocation:
 ---------------------
