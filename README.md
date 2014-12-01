@@ -3,21 +3,21 @@ CS-SAAD-Project3
 
 Description: 
 ------------
-This project simulates the diffusion of heat over the earth.
+This project simulates the diffusion of heat over a planet.
 
 Any of the implementations can be run from command line using the instructions below.
-Each of the implementations output the resulting temperatures across the heated plate after diffusion of heat takes place and temperatures stabilize.
+Each of the implementations output the resulting temperatures across the planet after diffusion of heat takes place and temperatures stabilize.
 
 
 Compilation Instructions:
 -------------------------
-1. Browse to this directory (Team33HeatedEarth/)
+1. Browse to this directory (CS-SAAD-Project3/)
 2. Ensure ~/bin exists, if not create it
 3. Issue the following command for the program:
 
 	javac -d bin -sourcepath src src/EarthSim/Demo.java
 
-Running Instructions:
+Command-line invocation:
 ---------------------
 The Heated Planet simulation program should be invoked as follows:
 
