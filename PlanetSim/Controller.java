@@ -52,12 +52,13 @@ public class Controller extends ThreadModel{
 			}
 
 			if (!ui.isRunning()){ System.exit(0); }
+			System.out.println("new config started");
 			ui.configReset();		//reset new configuration flag
 			this.model.updateConfig(ui.getSimName(),temporalPrecision,geographicPrecision,DEFAULT_DATE,
 					ui.getOrbit(),ui.getTilt(),ui.getGSpacing(),ui.getStep(),ui.getDuration());
 			new Thread (model).start();
 			
-			while(!model.isComplete() && model.isRunning()){
+			while(!model.isComplete() && model.isRunning() && !ui.newConfigStarted()){
 				if (ui.isPaused()){
 					System.out.println("Controller:PAUSE");
 					model.pause();
@@ -66,9 +67,13 @@ public class Controller extends ThreadModel{
 						System.out.println("Controller:STOP");
 						model.stop();
 					}else{
-						if (!ui.isPaused()){
+						if (!ui.isPaused() && model.isPaused()){
 							System.out.println("Controller:RESUME");
 							model.resume();
+						}
+						else
+						{
+							System.out.println("Controller running");	
 						}
 					}
 				}
@@ -79,6 +84,11 @@ public class Controller extends ThreadModel{
 					e.printStackTrace();
 				}
 
+			}
+			
+			if(ui.newConfigStarted()) {
+				System.out.println("Model Stop");
+				model.stop();
 			}
 		}
 	}

@@ -25,14 +25,14 @@ public class Model extends ThreadModel{
 		Map map = null;
 		new Thread(sim).start();
 		while (this.isRunning()&&!sim.isComplete()){							//add && (!sim.complete())
-			System.out.println("STARTING MODELTHREAD");
+			//System.out.println("STARTING MODELTHREAD");
 			while (!this.isPaused()&&!sim.isComplete()){
 				try {
-					System.out.println("MODEL:DEQUEUE");
+					// System.out.println("MODEL:DEQUEUE");
 					map = dequeue(simQueue);	//retrieves data from simulator
 					System.out.println("Map MODEL: " + map);
 					this.db.storeMap(map);		//presents to the DBModel for processing
-					System.out.println("MODEL:ENQUEUE");
+					// System.out.println("MODEL:ENQUEUE");
 					enqueue(viewQueue,map);		//returns the values to the controller
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -44,7 +44,7 @@ public class Model extends ThreadModel{
 				System.out.println("MODEL:LOOP:ISPAUSED:"+this.isPaused());
 				System.out.println("MODEL:LOOP:ISCOMPLETE:"+sim.isComplete());
 			}
-			System.out.println("MODEL:ENDING MODELTHREAD");
+			//System.out.println("MODEL:ENDING MODELTHREAD");
 		}
 		try {
 			this.db.manualCommit();

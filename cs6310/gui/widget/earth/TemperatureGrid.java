@@ -19,5 +19,10 @@ public interface TemperatureGrid {
    * Gets the height of the cell at the specified coordinates
    */
   public float getCellHeight(int x, int y);
+
+  /** 
+   * set temp
+   */
+  public void setTemperature(int x, int y, int temp, int gridSpacing);
   
 }

@@ -109,7 +109,10 @@ public class View extends JFrame implements Runnable {
 	private boolean running = true;
 	private boolean paused = false;
 	private boolean newConfig = false;
+	private boolean simRunning = false;
 	EarthPanel earthPanel;
+	private int iter = 0;
+	private TemperatureGridImpl grid;
 
 	/**
 	 * This should be all we need to put this in its own thread
@@ -124,12 +127,30 @@ public class View extends JFrame implements Runnable {
 		this.pack();
 
 		while(this.isRunning()) {
-			// System.out.println("VIEW: Is Running");
-			while(!btnStart.isEnabled()) {
-				// System.out.println("VIEW: Is Enabled");
+			System.out.println("View sim running: " + this.isSimRunning());
+
+			grid = new TemperatureGridImpl(getGSpacing());
+			while(this.isSimRunning()) {
+				System.out.println("VIEW: Is Enabled");
+				
 				try {
-					map = (Map) queue.poll(2, TimeUnit.MILLISECONDS);
-					// System.out.println("map VIEW");
+					map = (Map) queue.take();
+					System.out.println("-->Sim " + map);
+					if(!map.get("Iter").equals(iter)) {
+						if(grid != null) {
+							presentation(grid);
+						}
+						
+						iter++;
+					}
+
+					double lat = ((Double) map.get("Lat")).intValue();
+					double lon = ((Double) map.get("Lon")).intValue();
+					double temp = ((Double) map.get("Temp")).intValue();
+					
+					grid.setTemperature((int)lat, (int)lon, (int)temp,getGSpacing());
+						// System.out.println("map VIEW");
+					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -142,6 +163,24 @@ public class View extends JFrame implements Runnable {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Present an update to the grid
+	 */
+	public void presentation(TemperatureGridImpl grid) {
+		
+		try {
+			if(grid != null)
+			{
+				System.out.println("Update Grid");
+				System.out.println(grid.getCells().length);
+				earthPanel.updateGrid(grid);
+			}
+
+		} catch (Exception ex) {
+			System.out.println("Animation Error: " + ex.getMessage());
 		}
 	}
 
@@ -845,19 +884,23 @@ public class View extends JFrame implements Runnable {
 
 	public void pause(){
 		this.paused = true;
+		this.simRunning = false;
 	}
 
 	public void resume(){
 		this.paused = false;
+		this.simRunning = true;
 	}
 
 	public void stop(){
 		// closes the thread/view
 		// this.running = false;
+		this.simRunning = false;
 	}
 
 	public void start(){
 		this.newConfig = true;
+		this.simRunning = true;
 	}
 
 	public void configReset(){
@@ -866,9 +909,7 @@ public class View extends JFrame implements Runnable {
 	}
 
 	public boolean isSimRunning(){
-		boolean b = !this.btnResumePause.isEnabled() && !this.btnStop.isEnabled();
-		System.out.println(b);
-		return b;
+		return this.simRunning;
 	}
 
 	public boolean isRunning(){

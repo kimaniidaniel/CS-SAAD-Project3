@@ -1,8 +1,11 @@
 package cs6310.gui.widget.earth;
 import java.awt.Component;
 import java.awt.Dimension;
+
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+
+import PlanetSim.TemperatureGridImpl;
 
 /**
  * A {@link JPanel} composed of the the earth and sun display components.
@@ -67,8 +70,9 @@ public class EarthPanel extends JPanel {
    * 
    * @param grid the grid to get the new temperature values from
    */
-  public void updateGrid(TemperatureGrid grid) {
-    earth.updateGrid(grid);
+  public void updateGrid(TemperatureGridImpl grid) {
+	  System.out.println("UPDATING GRID" + " " + grid.getCells().length);
+	  earth.updateGrid(grid);
   }
   
   /**
