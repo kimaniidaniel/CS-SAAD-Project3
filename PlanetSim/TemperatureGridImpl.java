@@ -44,12 +44,8 @@ public class TemperatureGridImpl implements TemperatureGrid {
 	
 	@Override
 	public void setTemperature(int lat, int lon, int temp, int gridSpacing) {
-		int x = 0; // -90 to 90
-		int y = 0; // -180 to 180
-		if(lat != -90 && lon != -180) {
-			x = (lat + 90) / gridSpacing;
-			y = (lon + 180) / gridSpacing;
-		}
+		int x = (lat + 90) / gridSpacing;
+		int y = (lon + 180) / gridSpacing;
 		grid[x][y] = temp;
 	}
 
@@ -57,8 +53,8 @@ public class TemperatureGridImpl implements TemperatureGrid {
 	public double getTemperature(int x, int y) {
 		int rowIndex = (gridRows - 1) - y;
 		int colIndex = (gridCols + gridCols/2 - 1 - x) % gridCols;
-		//return celsiusToFahrenheit(kelvinToCelsius(grid[rowIndex][colIndex]));
-		return grid[rowIndex][colIndex];
+		return celsiusToFahrenheit(kelvinToCelsius(grid[rowIndex][colIndex]));
+		//return grid[rowIndex][colIndex];
 	}
 
 	private static double kelvinToCelsius(double K) {
