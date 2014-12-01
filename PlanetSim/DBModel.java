@@ -81,7 +81,7 @@ public class DBModel
     // current simulation settings
     private boolean previousSimDetected = false;			//flag to disable storage if previously stored
     private int geoInterval;
-    private long tempInterval = (this.length*this.timeStep);
+    private long tempInterval;
     private int geoPrecCtr = 0;							//used to track precision
     private int tempPrecCtr = 0;						//used to track precision
     private long currentStep;
@@ -101,9 +101,19 @@ public class DBModel
     {
         System.out.println("OPENNING DBMODEL THROUGH SIMCONFIGURATION");
         try {
-
+           this.temporalPrecision = TemporalPrecision;
+            this.geographicalPrecision = GeographicalPrecision;
+           this.startDate = StartDate;
+            this.orbit = Orbit;
+            this.tilt=Tilt;
+            this.gridSpacing=GridSpacing;
+            this.timeStep=TimeStep;
+            this.length=Length;
+            this.name = Name;
             this.conn = Connect(DATABASENAME);
             this.name = ("".equals(Name)) ? "Sim_" + this.getTimeStamp() : Name;
+            this.tempInterval = (Tools.getTotalLength(this.length)/this.timeStep);
+            this.geoInterval = ((360 * 180)/this.gridSpacing);
             updateConfig(this.name, TemporalPrecision, GeographicalPrecision, StartDate, Orbit, Tilt, GridSpacing, TimeStep, Length);
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,6 +138,9 @@ public class DBModel
             this.timeStep = TimeStep;
             this.length = Length;
             this.conn = Connect(DATABASENAME);
+            this.tempInterval = (Tools.getTotalLength(this.length)/1000/this.timeStep);
+            this.geoInterval = ((360 * 180)/this.gridSpacing);
+
             getConfig_ID();//this will set the CONFIG_ID if found or add to the table and return index if not
         } catch (Exception e) {
             e.printStackTrace();
@@ -350,23 +363,39 @@ public class DBModel
 
         if (!previousSimDetected) {																//will skip storage if previous simulation detected
             if ( validTemporal((int) map.get("Iter"))  || temporalPrecision == 100) {			//will count down the number of allowable temporal saves
-                if (geoPrecCtr++ < ( this.geoInterval * (  ( this.geographicalPrecision * 1.0 ) / 100 )) || (geographicalPrecision == 100)) {	    //will count down the number of allowable geographical saves
+             //   System.out.println("T:VALID");
+
+                if ((this.geoPrecCtr++ < ( this.geoInterval / 100 * (  ( this.geographicalPrecision * 1.0 ) ))) || (geographicalPrecision == 100)) {	    //will count down the number of allowable geographical saves
+
                     try {
-                        insertGridData((double) map.get("Lat"), (double) map.get("Lon"), (double) map.get("Temp"), (int) map.get("Iter"), (long)map.get("Day"), (long)map.get("Min"), this.CONFIG_ID);
+                       //System.out.println(map);
+                        insertGridData((double) map.get("Lat"), (double) map.get("Lon"), (double) map.get("Temp"), (int) map.get("Iter"), (long) map.get("Day"), (long)map.get("Min"), this.CONFIG_ID);
                     } catch (SQLException e) {
                         e.printStackTrace();
                         System.exit(0);
                     }
-                } else if (geoPrecCtr == this.geoInterval) {  geoPrecCtr = 0; }
+                } else if (this.geoPrecCtr == this.geoInterval) {  geoPrecCtr = 0; }
 
             }
         }
     }
 
     private boolean validTemporal(long x){
-        if ( this.currentStep == x ) { if ( tempPrecCtr < ( this.tempInterval * (  this.temporalPrecision / 100 ) ) ) { return true; } else {  return false; }  }
-        else if ( tempPrecCtr < ( this.tempInterval * (  this.temporalPrecision / 100 ) ) ) { this.currentStep = x; tempPrecCtr++; if ( tempPrecCtr < this.tempInterval ) { return true; } else{  return false; } }
-        else if ( tempPrecCtr == this.tempInterval ) { tempPrecCtr = 0; }
+       //System.out.println(x+":"+this.currentStep+":"+tempPrecCtr+":"+this.tempInterval+":"+this.length*this.timeStep+":"+(int)(this.tempInterval/ 100*(  this.temporalPrecision  )));
+        if ( this.currentStep == x ) { if ( tempPrecCtr < ( this.tempInterval/ 100 * (  this.temporalPrecision  ) ) ) { return true; } else {  return false; }  }
+        else {
+            this.currentStep = x;
+            if (tempPrecCtr < (this.tempInterval / 100 * (this.temporalPrecision))) {
+                tempPrecCtr++;
+                if (tempPrecCtr < this.tempInterval) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else if (tempPrecCtr == this.tempInterval) {
+                tempPrecCtr = 0;
+            }
+        }
         return false;
     }
 
