@@ -81,7 +81,7 @@ public final class Simulator extends ThreadModel {
 	}
 	
 	public void configure(double eccentricity, double Tilt, int gs, int timeStep, int simlength) {
-		System.out.println("Ecc: " + eccentricity + ", Tilt: " + Tilt + ", Grid: " + gs + ", TStp: " + timeStep + ", SLth:" + simlength);
+//		System.out.println("Ecc: " + eccentricity + ", Tilt: " + Tilt + ", Grid: " + gs + ", TStp: " + timeStep + ", SLth:" + simlength);
 		E = eccentricity;
 		tilt = Tilt;
 		configure(gs, timeStep, simlength);
@@ -107,12 +107,12 @@ public final class Simulator extends ThreadModel {
 				}
 			}
 
-			System.out.println("gs: " + this.gs);
+//			System.out.println("gs: " + this.gs);
 		} else
 			this.gs = gs;
 
 		if (simlength != -1) {
-			this.simlen = this.month2Miniute(simlength, timeStep);
+			this.simlen = this.month2Minite(simlength);
 			//System.out.println("Simulator: SimLen: "+simlen);
 			
 		}
@@ -199,12 +199,13 @@ public final class Simulator extends ThreadModel {
 //		System.out.println("still running");
 		System.out.println("During simulation Ecc: " + E + ", Tilt: " + tilt + ", Grid: " + this.gs + ", TStp: " + this.timeStep + ", SLth:" + this.simlen);
 
+//		this.configure();
 		this.initiate();
 		while (this.isRunning()) {
 			while (!this.isPaused() && !this.isComplete()) {
 				try {
 					this.generate();
-					System.out.println("still running");
+//					System.out.println("still running");
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 					System.exit(0);
@@ -231,14 +232,19 @@ public final class Simulator extends ThreadModel {
 
 	public void generate() throws InterruptedException {
 
+//		System.out.println(currentStep);
+//		System.out.println(this.prime.getSunLatitudeOnEarth());
+//		this.printGrid();
+//		System.out.println("Ecc: " + E + ", Tilt: " + tilt + ", Grid: " + this.gs + ", TStp: " + this.timeStep + ", SLth:" + this.simlen);
+
 		//System.out.println("generating grid...");
 		Queue<GridCell> bfs = new LinkedList<GridCell>();
 		Queue<GridCell> calcd = new LinkedList<GridCell>();
 
 		currentStep++;
 
-		//int t = timeStep * currentStep;
-		int t = currentStep;
+		int t = timeStep * currentStep;
+//		int t = currentStep;
 		//System.out.println("Timestep: " + timeStep + ", currentStep: " + currentStep);
 		int rotationalAngle = 360 - ((t % A_DAY) * 360 / A_DAY);
 		sunPositionCell = ( (width * rotationalAngle) / 360 ) % width;
@@ -419,35 +425,58 @@ public final class Simulator extends ThreadModel {
 		return Simulator.sunPositionDeg;
 	}
 	
-	public int month2Miniute(int month, int timestep) {
+	public int month2Minite(int month) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(Tools.getStartDate());
 		cal.add(Calendar.MONTH, month);
 		long startDate = Tools.getStartDate().getTime();
 		long endDate = cal.getTimeInMillis();
 
-		return (int) ((endDate - startDate) / (60000 * timestep));
+		return (int) ((endDate - startDate) / 60000);
 	}
 	
-//	public void printGrid(){
-//		GridCell curr = this.prime;
-//		//System.out.println(height);
-//		//System.out.println(width);
-//		float total = 0;
-//		for (int x = 0; x < height; x++) {
-//			GridCell rowgrid = curr.getLeft();
-//			for (int y = 0; y < width; y++) {
-//				//System.out.printf("%.2f,",rowgrid.getLongitude());
-////				System.out.printf("%2d,",rowgrid.getLongitude());
-//				System.out.printf("%.2f,",rowgrid.getTemp());
-//				rowgrid = rowgrid.getLeft();
-//				total += rowgrid.getTemp() - 288;
-//			}
-//			System.out.println();
-//			curr = curr.getTop();
-//		}
-//		System.out.println(total);
-//	}
+	
+
+	public void diffTemp(){
+	GridCell curr = this.prime;
+	//System.out.println(height);
+	//System.out.println(width);
+	float total = 0;
+	for (int x = 0; x < height; x++) {
+		GridCell rowgrid = curr.getLeft();
+		for (int y = 0; y < width; y++) {
+			//System.out.printf("%.2f,",rowgrid.getLongitude());
+//			System.out.printf("%2d,",rowgrid.getLongitude());
+//			System.out.printf("%.2f,",rowgrid.getTemp());
+			rowgrid = rowgrid.getLeft();
+			total += rowgrid.getTemp() - 288;
+		}
+//		System.out.println();
+		curr = curr.getTop();
+	}
+	System.out.println(total);
+}
+	
+
+	public void printGrid(){
+		GridCell curr = this.prime;
+		//System.out.println(height);
+		//System.out.println(width);
+		float total = 0;
+		for (int x = 0; x < height; x++) {
+			GridCell rowgrid = curr.getLeft();
+			for (int y = 0; y < width; y++) {
+				//System.out.printf("%.2f,",rowgrid.getLongitude());
+//				System.out.printf("%2d,",rowgrid.getLongitude());
+				System.out.printf("%.2f,",rowgrid.getTemp());
+				rowgrid = rowgrid.getLeft();
+				total += rowgrid.getTemp() - 288;
+			}
+			System.out.println();
+			curr = curr.getTop();
+		}
+		System.out.println(total);
+	}
 //
 //	private void printMap(Map<String, Number> map){
 //		System.out.println("Lon:" + map.get("Lon"));
