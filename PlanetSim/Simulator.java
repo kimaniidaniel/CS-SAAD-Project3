@@ -26,6 +26,7 @@ public final class Simulator extends ThreadModel {
 	private static final int DEFAULT_DEGREES = 15;
 	private static final int DEFAULT_SPEED = 1; // minutes
 	private static final int MAX_DEGREES = 180;
+	private static final int A_DAY = 1440;
 	private static final int MAX_SPEED = 525600;
 	private static final int DEFAULT_SIM_LENGTH = 12 * 30 * 1440;  // one Solar year
 
@@ -196,7 +197,9 @@ public final class Simulator extends ThreadModel {
 
 	public void run() {
 //		System.out.println("still running");
-		this.configure();
+		System.out.println("During simulation Ecc: " + E + ", Tilt: " + tilt + ", Grid: " + this.gs + ", TStp: " + this.timeStep + ", SLth:" + this.simlen);
+
+		this.initiate();
 		while (this.isRunning()) {
 			while (!this.isPaused() && !this.isComplete()) {
 				try {
@@ -237,7 +240,7 @@ public final class Simulator extends ThreadModel {
 		//int t = timeStep * currentStep;
 		int t = currentStep;
 		//System.out.println("Timestep: " + timeStep + ", currentStep: " + currentStep);
-		int rotationalAngle = 360 - ((t % MAX_SPEED) * 360 / MAX_SPEED);
+		int rotationalAngle = 360 - ((t % A_DAY) * 360 / A_DAY);
 		sunPositionCell = ( (width * rotationalAngle) / 360 ) % width;
 
 		sunPositionDeg = rotationalAngle;
@@ -299,7 +302,7 @@ public final class Simulator extends ThreadModel {
 				// Adding data to array block queue
 				queue.put(map);
 
-                System.out.println(map + "<<<");
+//                System.out.println(map + "<<<");
 
 			}
 		}

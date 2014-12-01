@@ -24,7 +24,7 @@ public final class GridCell implements EarthCell<GridCell> {
 	private float lv, lb, lt, surfarea, pm;
 	
 	//private static final int suntemp = 278;
-	private static final int suntemp = 50;
+	private static final int suntemp = 278;
 
 	public GridCell(float temp, int x, int y, int latitude, int longitude, int gs) {
 
