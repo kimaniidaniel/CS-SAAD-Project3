@@ -43,7 +43,6 @@ public class Controller extends ThreadModel{
 			System.out.println("Controlller Loop : Main");
 			while (!ui.newConfigStarted() && ui.isRunning()){
 				System.out.println("Controller Waiting for start");
-				ui.stop(); // hack to get UI reset if model is completed...
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -86,6 +85,8 @@ public class Controller extends ThreadModel{
 				}
 
 			}
+			
+			ui.stop();
 			
 			if(ui.newConfigStarted()) {
 				System.out.println("Model Stop");
