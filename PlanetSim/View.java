@@ -112,6 +112,7 @@ public class View extends JFrame implements Runnable {
 	private boolean simRunning = false;
 	EarthPanel earthPanel;
 	private int iter = 0;
+	private float longChangePerStep = 0;
 	private TemperatureGridImpl grid;
 
 	/**
@@ -177,6 +178,8 @@ public class View extends JFrame implements Runnable {
 				System.out.println("Update Grid");
 				System.out.println(grid.getCells().length);
 				earthPanel.updateGrid(grid);
+				earthPanel.moveSunPosition(longChangePerStep);
+				updateProgress(iter);
 			}
 
 		} catch (Exception ex) {
@@ -338,6 +341,7 @@ public class View extends JFrame implements Runnable {
 
 		JLabel lblOrbPosText = new JLabel("Orbital Position");
 		miscPane.add(lblOrbPosText);
+		lblOrbPosText.setVisible(false); // not sure if needed anymore
 
 		JLabel lblOrbPosValue = new JLabel("");
 		miscPane.add(lblOrbPosValue);
@@ -345,6 +349,7 @@ public class View extends JFrame implements Runnable {
 		JLabel lblRotPosText = new JLabel("Rotational Position");
 		lblRotPosText.setBorder(new EmptyBorder(0, 25, 0, 0));
 		miscPane.add(lblRotPosText);
+		lblRotPosText.setVisible(false); // not sure if needed anymore
 
 		JLabel lblRotPosValue = new JLabel("");
 		miscPane.add(lblRotPosValue);
@@ -700,7 +705,7 @@ public class View extends JFrame implements Runnable {
 				btnResumePause.setEnabled(true);
 				toggleSimControls(false);
 				progressBar.setString(DEFAULT_DATE_TIME + " (0%)");
-				// TODO: progressBar.setMaximum();
+				progressBar.setMaximum(month2Miniute(getDuration(),getStep()));
 				start();
 			}
 		});
@@ -726,13 +731,7 @@ public class View extends JFrame implements Runnable {
 		btnStop.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				btnResumePause.setText("Pause");
-				btnResumePause.setEnabled(false);
-				btnStop.setEnabled(false);
-				progressBar.setString("Click 'Start' To Begin");
-				progressBar.setValue(0);
-				toggleSimControls(true);
-				resume();
+				stop();
 			}
 		});
 
@@ -895,12 +894,23 @@ public class View extends JFrame implements Runnable {
 	public void stop(){
 		// closes the thread/view
 		// this.running = false;
+		this.iter = 0; // reset iteration
+		this.longChangePerStep = 0;
 		this.simRunning = false;
+		
+		// reset controls
+		btnResumePause.setText("Pause");
+		btnResumePause.setEnabled(false);
+		btnStop.setEnabled(false);
+		progressBar.setString("Sim Completed.");
+		progressBar.setValue(0);
+		toggleSimControls(true);
 	}
 
 	public void start(){
 		this.newConfig = true;
 		this.simRunning = true;
+		this.longChangePerStep = 12 * getStep() / 3600;;
 	}
 
 	public void configReset(){
@@ -956,5 +966,27 @@ public class View extends JFrame implements Runnable {
 			return 0;
 		else
 			return Integer.parseInt(combo.substring(0, b));
+	}
+	
+	public int month2Miniute(int month, int timestep) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(Tools.getStartDate());
+		cal.add(Calendar.MONTH, month);
+		long startDate = Tools.getStartDate().getTime();
+		long endDate = cal.getTimeInMillis();
+
+		return (int) ((endDate - startDate) / (60000 * timestep));
+	}
+	
+	// update progress based on iterations passed
+	public void updateProgress(int iteration) {
+		Double percentage = (iteration * 1.0 / progressBar.getMaximum()) * 100;
+		progressBar.setValue(iteration);
+		
+		// calculate date string from iterations
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(Tools.getStartDate());
+		cal.add(Calendar.MINUTE, getStep() * iteration);
+		progressBar.setString(cal.getTime().toString() + " ("+percentage.intValue()+"%)");
 	}
 }
