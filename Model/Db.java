@@ -84,7 +84,7 @@ public class Db {
           Class.forName("org.sqlite.JDBC");
           c = DriverManager.getConnection("jdbc:sqlite:"+databaseName);
           verifyDatabase(c);
-        } catch ( ClassNotFoundException | SQLException e ) {
+        } catch ( SQLException e ) {
           System.err.println( e.getClass().getName() + ": " + e.getMessage() );
           Logger.getLogger(Db.class.getName()).log(Level.SEVERE, null, e);
           throw e;

@@ -24,9 +24,9 @@ public class Controller extends ThreadModel{
 
 	public Controller(ArrayList<Map> args){
 		for (Map map : args){
-			if (isKey("p",map)){ precision = (int)map.get("p"); }
-			if (isKey("g",map)){ geographicPrecision = (int)map.get("g"); }
-			if (isKey("t",map)){ temporalPrecision = (int)map.get("t"); }
+			if (isKey("p",map)){ precision = (Integer)map.get("p"); }
+			if (isKey("g",map)){ geographicPrecision = (Integer)map.get("g"); }
+			if (isKey("t",map)){ temporalPrecision = (Integer)map.get("t"); }
 		}
 	}
 		

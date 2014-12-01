@@ -939,11 +939,11 @@ public class View extends JFrame implements Runnable {
 	}
 
 	public double getOrbit(){
-		return (double)spnSimEccentricity.getValue();
+		return (Double)spnSimEccentricity.getValue();
 	}
 
 	public double getTilt(){
-		return (double)spnSimTilt.getValue();		
+		return (Double)spnSimTilt.getValue();		
 	}
 
 	public int getGSpacing(){
@@ -952,11 +952,11 @@ public class View extends JFrame implements Runnable {
 	}
 
 	public int getStep(){
-		return (int)spnTimeStep.getValue();
+		return (Integer)spnTimeStep.getValue();
 	}
 
 	public int getDuration(){
-		return (int)spnSimLength.getValue();
+		return (Integer)spnSimLength.getValue();
 	}
 
 	public int getIdFromComboBox(String combo) {
