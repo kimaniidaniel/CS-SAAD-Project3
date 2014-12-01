@@ -5,7 +5,7 @@ import java.util.concurrent.BlockingQueue;
 public class ThreadModel implements Runnable {
 	
 	private final int BUFFER_SIZE = 32;
-	private final boolean debug = true;
+	private final boolean debug = false;
 	private volatile boolean running = true;
 	private volatile boolean pause = true;
 	private String thread_name;

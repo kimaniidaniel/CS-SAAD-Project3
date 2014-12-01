@@ -197,7 +197,7 @@ public final class Simulator extends ThreadModel {
 
 	public void run() {
 //		System.out.println("still running");
-		System.out.println("During simulation Ecc: " + E + ", Tilt: " + tilt + ", Grid: " + this.gs + ", TStp: " + this.timeStep + ", SLth:" + this.simlen);
+		//System.out.println("During simulation Ecc: " + E + ", Tilt: " + tilt + ", Grid: " + this.gs + ", TStp: " + this.timeStep + ", SLth:" + this.simlen);
 
 //		this.configure();
 		this.initiate();
@@ -454,7 +454,7 @@ public final class Simulator extends ThreadModel {
 //		System.out.println();
 		curr = curr.getTop();
 	}
-	System.out.println(total);
+	//System.out.println(total);
 }
 	
 
@@ -468,14 +468,14 @@ public final class Simulator extends ThreadModel {
 			for (int y = 0; y < width; y++) {
 				//System.out.printf("%.2f,",rowgrid.getLongitude());
 //				System.out.printf("%2d,",rowgrid.getLongitude());
-				System.out.printf("%.2f,",rowgrid.getTemp());
+				//System.out.printf("%.2f,",rowgrid.getTemp());
 				rowgrid = rowgrid.getLeft();
 				total += rowgrid.getTemp() - 288;
 			}
-			System.out.println();
+			//System.out.println();
 			curr = curr.getTop();
 		}
-		System.out.println(total);
+		//System.out.println(total);
 	}
 //
 //	private void printMap(Map<String, Number> map){

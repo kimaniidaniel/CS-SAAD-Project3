@@ -128,15 +128,15 @@ public class View extends JFrame implements Runnable {
 		this.pack();
 
 		while(this.isRunning()) {
-			System.out.println("View sim running: " + this.isSimRunning());
+			//System.out.println("View sim running: " + this.isSimRunning());
 
 			grid = new TemperatureGridImpl(getGSpacing());
 			while(this.isSimRunning()) {
-				System.out.println("VIEW: Is Enabled");
+				//System.out.println("VIEW: Is Enabled");
 				
 				try {
 					map = (Map) queue.take();
-					System.out.println("-->Sim " + map);
+					//System.out.println("-->Sim " + map);
 					if(!map.get("Iter").equals(iter)) {
 						if(grid != null) {
 							presentation(grid);
@@ -175,8 +175,8 @@ public class View extends JFrame implements Runnable {
 		try {
 			if(grid != null)
 			{
-				System.out.println("Update Grid");
-				System.out.println(grid.getCells().length);
+				//System.out.println("Update Grid");
+				//System.out.println(grid.getCells().length);
 				earthPanel.updateGrid(grid);
 				earthPanel.moveSunPosition(longChangePerStep);
 				updateProgress(iter);
@@ -705,7 +705,7 @@ public class View extends JFrame implements Runnable {
 				btnResumePause.setEnabled(true);
 				toggleSimControls(false);
 				progressBar.setString(DEFAULT_DATE_TIME + " (0%)");
-				progressBar.setMaximum(month2Miniute(getDuration(),getStep()));
+				progressBar.setMaximum(month2Miniute(getDuration()));
 				start();
 			}
 		});
@@ -914,7 +914,7 @@ public class View extends JFrame implements Runnable {
 	}
 
 	public void configReset(){
-		System.out.println("View:System start Reset");
+		//System.out.println("View:System start Reset");
 		this.newConfig = false;
 	}
 
@@ -939,11 +939,11 @@ public class View extends JFrame implements Runnable {
 	}
 
 	public double getOrbit(){
-		return (double)spnSimEccentricity.getValue();
+		return (Double)spnSimEccentricity.getValue();
 	}
 
 	public double getTilt(){
-		return (double)spnSimTilt.getValue();		
+		return (Double)spnSimTilt.getValue();		
 	}
 
 	public int getGSpacing(){
@@ -952,11 +952,11 @@ public class View extends JFrame implements Runnable {
 	}
 
 	public int getStep(){
-		return (int)spnTimeStep.getValue();
+		return (Integer)spnTimeStep.getValue();
 	}
 
 	public int getDuration(){
-		return (int)spnSimLength.getValue();
+		return (Integer)spnSimLength.getValue();
 	}
 
 	public int getIdFromComboBox(String combo) {
@@ -968,14 +968,14 @@ public class View extends JFrame implements Runnable {
 			return Integer.parseInt(combo.substring(0, b));
 	}
 	
-	public int month2Miniute(int month, int timestep) {
+	public int month2Miniute(int month) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(Tools.getStartDate());
 		cal.add(Calendar.MONTH, month);
 		long startDate = Tools.getStartDate().getTime();
 		long endDate = cal.getTimeInMillis();
 
-		return (int) ((endDate - startDate) / (60000 * timestep));
+		return (int) (endDate - startDate) / (60000);
 	}
 	
 	// update progress based on iterations passed
@@ -986,7 +986,7 @@ public class View extends JFrame implements Runnable {
 		// calculate date string from iterations
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(Tools.getStartDate());
-		cal.add(Calendar.MINUTE, getStep() * iteration);
+		cal.add(Calendar.MINUTE, (getStep() * iteration) / 60);
 		progressBar.setString(cal.getTime().toString() + " ("+percentage.intValue()+"%)");
 	}
 }

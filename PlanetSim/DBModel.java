@@ -99,7 +99,7 @@ public class DBModel
 
     public DBModel(String Name, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length)
     {
-        System.out.println("OPENNING DBMODEL THROUGH SIMCONFIGURATION");
+        //System.out.println("OPENNING DBMODEL THROUGH SIMCONFIGURATION");
         try {
            this.temporalPrecision = TemporalPrecision;
             this.geographicalPrecision = GeographicalPrecision;
@@ -169,7 +169,7 @@ public class DBModel
             stmt.executeUpdate(statement);
             this.conn.commit();
         } catch (Exception e) {
-            throw e;
+            e.printStackTrace();
         }
 
         cleanUp();
@@ -185,7 +185,7 @@ public class DBModel
             Statement stmt = this.conn.createStatement();
             stmt.executeUpdate(statement);
         } catch (Exception e) {
-            throw e;
+            e.printStackTrace();
         }
         cleanUp();
 
@@ -206,11 +206,11 @@ public class DBModel
             try {
                 Statement stmt = c.createStatement();
                 if (this.isDebug()) {
-                    System.out.println("Creating:" + SIM_CONFIG_TBL);
+                    //System.out.println("Creating:" + SIM_CONFIG_TBL);
                 }
                 stmt.execute(CREATE_SIM_CONFIG_TBL);								// creates table SIM_CONFIG_TBL if not present
                 if (this.isDebug()) {
-                    System.out.println("Creating:" + PLANET_CELLS_TBL);
+                    //System.out.println("Creating:" + PLANET_CELLS_TBL);
                 }
                 stmt.execute(CREATE_PLANET_CELLS_TBL);							// creates table PLANET_CELLS_TBL if not present
                 c.commit();
@@ -218,12 +218,12 @@ public class DBModel
             catch (Exception e) {
                 throw e;
             }
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
         if (this.isDebug()) {
-            System.out.println("Opened database successfully");
+            //System.out.println("Opened database successfully");
         }
         return c;
     }
@@ -256,7 +256,7 @@ public class DBModel
                     this.CONFIG_ID = rs.getInt("CONFIG_ID");
                     //sets previousSim to true so that the storage will be skipped
                     this.previousSimDetected = true;
-                    System.out.println("CONFIG EXISTS: CONFIG_ID=" + this.CONFIG_ID);
+                    //System.out.println("CONFIG EXISTS: CONFIG_ID=" + this.CONFIG_ID);
                 } else {
                     //checks if the config exists if not adds to the table
                     this.CONFIG_ID = getCountTable(SIM_CONFIG_TBL);
@@ -266,7 +266,7 @@ public class DBModel
 
                 }
             } catch (Exception e) {
-                throw e;
+                e.printStackTrace();
             }
             this.conn.commit();
         } catch (SQLException e) {
@@ -285,7 +285,7 @@ public class DBModel
             Statement stmt = this.conn.createStatement();
             ResultSet rs = stmt.executeQuery(statement);
             next_number = rs.getInt("rowcount") + 1;
-            System.out.println("NEXT INDEX FOR " + table + " is " + next_number);
+            //System.out.println("NEXT INDEX FOR " + table + " is " + next_number);
             rs.close();
             stmt.close();
         } catch (Exception e) {
@@ -362,14 +362,14 @@ public class DBModel
     {
 
         if (!previousSimDetected) {																//will skip storage if previous simulation detected
-            if ( validTemporal((int) map.get("Iter"))  || temporalPrecision == 100) {			//will count down the number of allowable temporal saves
+            if ( validTemporal((Integer) map.get("Iter"))  || temporalPrecision == 100) {			//will count down the number of allowable temporal saves
              //   System.out.println("T:VALID");
 
                 if ((this.geoPrecCtr++ < ( this.geoInterval / 100 * (  ( this.geographicalPrecision * 1.0 ) ))) || (geographicalPrecision == 100)) {	    //will count down the number of allowable geographical saves
 
                     try {
                        //System.out.println(map);
-                        insertGridData((double) map.get("Lat"), (double) map.get("Lon"), (double) map.get("Temp"), (int) map.get("Iter"), (long) map.get("Day"), (long)map.get("Min"), this.CONFIG_ID);
+                        insertGridData((Double) map.get("Lat"), (Double) map.get("Lon"), (Double) map.get("Temp"), (Integer) map.get("Iter"), (Long) map.get("Day"), (Long)map.get("Min"), this.CONFIG_ID);
                     } catch (SQLException e) {
                         e.printStackTrace();
                         System.exit(0);
@@ -413,8 +413,8 @@ public class DBModel
         ResultSet rs = null;
         // int configId = 0;
         Utils.QueryResult result = new Utils.QueryResult();
-        List<Utils.SimulationConfig> SimulationConfigs = new ArrayList<>();
-        List<Utils.TemperatureReading> TemperaturReadings = new ArrayList<>();
+        List<Utils.SimulationConfig> SimulationConfigs = new ArrayList<Utils.SimulationConfig>();
+        List<Utils.TemperatureReading> TemperaturReadings = new ArrayList<Utils.TemperatureReading>();
                                                  
         /* Build query SQL command */
         sqlCommand += (configId>0)     				?String.format(" AND CONFIG_ID = %d", configId):"";
@@ -489,7 +489,7 @@ public class DBModel
 
     	String sqlCommand;
         ResultSet rs = null;
-        List<TemperatureReading> TemperaturReadings = new ArrayList<>();
+        List<TemperatureReading> TemperaturReadings = new ArrayList<TemperatureReading>();
         sqlCommand = String.format("SELECT * FROM '%s' WHERE CONFIG_ID = %d ", PLANET_CELLS_TBL, configId);         /* query cell details */
         try {
             Statement stmt = this.conn.createStatement();

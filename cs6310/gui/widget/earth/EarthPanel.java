@@ -71,7 +71,7 @@ public class EarthPanel extends JPanel {
    * @param grid the grid to get the new temperature values from
    */
   public void updateGrid(TemperatureGridImpl grid) {
-	  System.out.println("UPDATING GRID" + " " + grid.getCells().length);
+	  //System.out.println("UPDATING GRID" + " " + grid.getCells().length);
 	  earth.updateGrid(grid);
   }
   
