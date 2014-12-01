@@ -94,7 +94,7 @@ public class Tools {
 
     public static boolean inList(String x){
 
-        String validArgs[] = { "-p" , "-g" , "-t"};
+        String validArgs[] = { "-p" , "-g" , "-t", "-cp"};
         for(String str: validArgs) {
             if(str.trim().contains(x))
                 return true;

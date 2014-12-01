@@ -99,7 +99,7 @@ public class DBModel
 
     public DBModel(String Name, int TemporalPrecision, int GeographicalPrecision, String StartDate, double Orbit, double Tilt, int GridSpacing, int TimeStep, int Length)
     {
-        System.out.println("OPENNING DBMODEL THROUGH SIMCONFIGURATION");
+        //System.out.println("OPENNING DBMODEL THROUGH SIMCONFIGURATION");
         try {
            this.temporalPrecision = TemporalPrecision;
             this.geographicalPrecision = GeographicalPrecision;
@@ -206,11 +206,11 @@ public class DBModel
             try {
                 Statement stmt = c.createStatement();
                 if (this.isDebug()) {
-                    System.out.println("Creating:" + SIM_CONFIG_TBL);
+                    //System.out.println("Creating:" + SIM_CONFIG_TBL);
                 }
                 stmt.execute(CREATE_SIM_CONFIG_TBL);								// creates table SIM_CONFIG_TBL if not present
                 if (this.isDebug()) {
-                    System.out.println("Creating:" + PLANET_CELLS_TBL);
+                    //System.out.println("Creating:" + PLANET_CELLS_TBL);
                 }
                 stmt.execute(CREATE_PLANET_CELLS_TBL);							// creates table PLANET_CELLS_TBL if not present
                 c.commit();
@@ -223,7 +223,7 @@ public class DBModel
             System.exit(0);
         }
         if (this.isDebug()) {
-            System.out.println("Opened database successfully");
+            //System.out.println("Opened database successfully");
         }
         return c;
     }
@@ -256,7 +256,7 @@ public class DBModel
                     this.CONFIG_ID = rs.getInt("CONFIG_ID");
                     //sets previousSim to true so that the storage will be skipped
                     this.previousSimDetected = true;
-                    System.out.println("CONFIG EXISTS: CONFIG_ID=" + this.CONFIG_ID);
+                    //System.out.println("CONFIG EXISTS: CONFIG_ID=" + this.CONFIG_ID);
                 } else {
                     //checks if the config exists if not adds to the table
                     this.CONFIG_ID = getCountTable(SIM_CONFIG_TBL);
@@ -285,7 +285,7 @@ public class DBModel
             Statement stmt = this.conn.createStatement();
             ResultSet rs = stmt.executeQuery(statement);
             next_number = rs.getInt("rowcount") + 1;
-            System.out.println("NEXT INDEX FOR " + table + " is " + next_number);
+            //System.out.println("NEXT INDEX FOR " + table + " is " + next_number);
             rs.close();
             stmt.close();
         } catch (Exception e) {

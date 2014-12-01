@@ -38,11 +38,11 @@ public class Controller extends ThreadModel{
 	@Override
 	public void run(){
 		uiThread.start();
-		System.out.println("STARTING CONTOLLER");
+		//System.out.println("STARTING CONTOLLER");
 		while (this.isRunning()){
-			System.out.println("Controlller Loop : Main");
+			//System.out.println("Controlller Loop : Main");
 			while (!ui.newConfigStarted() && ui.isRunning()){
-				System.out.println("Controller Waiting for start");
+				//System.out.println("Controller Waiting for start");
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -52,7 +52,7 @@ public class Controller extends ThreadModel{
 			}
 
 			if (!ui.isRunning()){ System.exit(0); }
-			System.out.println("new config started");
+			//System.out.println("new config started");
 			ui.configReset();		//reset new configuration flag
 			this.model.updateConfig(ui.getSimName(),temporalPrecision,geographicPrecision,DEFAULT_DATE,
 					ui.getOrbit(),ui.getTilt(),ui.getGSpacing(),ui.getStep(),ui.getDuration());
@@ -60,20 +60,20 @@ public class Controller extends ThreadModel{
 			
 			while(!model.isComplete() && model.isRunning() && !ui.newConfigStarted()){
 				if (ui.isPaused()){
-					System.out.println("Controller:PAUSE");
+					//System.out.println("Controller:PAUSE");
 					model.pause();
 				}else{
 					if (!ui.isRunning()){
-						System.out.println("Controller:STOP");
+						//System.out.println("Controller:STOP");
 						model.stop();
 					}else{
 						if (!ui.isPaused() && model.isPaused()){
-							System.out.println("Controller:RESUME");
+							//System.out.println("Controller:RESUME");
 							model.resume();
 						}
 						else
 						{
-							System.out.println("Controller running");	
+							//System.out.println("Controller running");	
 						}
 					}
 				}
@@ -89,7 +89,7 @@ public class Controller extends ThreadModel{
 			ui.stop();
 			
 			if(ui.newConfigStarted()) {
-				System.out.println("Model Stop");
+				//System.out.println("Model Stop");
 				model.stop();
 			}
 		}
