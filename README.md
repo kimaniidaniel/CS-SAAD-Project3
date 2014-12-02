@@ -12,16 +12,18 @@ Each of the implementations output the resulting temperatures across the planet 
 Compilation Instructions:
 -------------------------
 1. Browse to this directory (CS-SAAD-Project3/)
-2. Ensure ~/bin exists, if not create it
-3. Issue the following command for the program:
+2. Issue the following command for the program:
 
-	javac -d bin -sourcepath src PlanetSim/Demo.java
+	javac PlanetSim/Demo.java
 
 Command-line invocation:
 ---------------------
 The Heated Planet simulation program should be invoked as follows:
 
-java PlanetSim.Demo [-p #] [-g #] [-t #]
+Windows: java -classpath ".;libs/sqlite-jdbc-3.8.7.jar" PlanetSim.Demo [-p #] [-g #] [-t #]
+
+Mac or Linux: java -classpath ".:libs/sqlite-jdbc-3.8.7.jar" PlanetSim.Demo [-p #] [-g #] [-t #]
+
 PlanetSim.Demo should be invoked with the following Invocation Parameters to allow the designer to control the persisted results.
 
 * -p #: The precision of the data to be stored, in decimal digits after the decimal point. The default is to use the number of digits storable in a normalized float variable. The maximum is the number of digits storable in a normalized double variable. The minimum is zero.
