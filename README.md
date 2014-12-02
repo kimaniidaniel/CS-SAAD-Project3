@@ -21,6 +21,7 @@ Command-line invocation:
 The Heated Planet simulation program should be invoked as follows:
 
 Windows: java -classpath ".;libs/sqlite-jdbc-3.8.7.jar" PlanetSim.Demo [-p #] [-g #] [-t #]
+
 Mac or Linux: java -classpath ".:libs/sqlite-jdbc-3.8.7.jar" PlanetSim.Demo [-p #] [-g #] [-t #]
 
 PlanetSim.Demo should be invoked with the following Invocation Parameters to allow the designer to control the persisted results.
